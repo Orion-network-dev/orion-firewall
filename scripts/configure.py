@@ -53,7 +53,7 @@ def main():
 
 		orion_wireguard_conf += f"[Peer]\n"
 		orion_wireguard_conf += f"PublicKey = {peer_public_key}\n"
-		orion_wireguard_conf += f"AllowedIPs 10.30.255.{peer_id}/32\n"
+		orion_wireguard_conf += f"AllowedIPs = 10.30.255.{peer_id}/32\n"
 		orion_wireguard_conf += f"PersistentKeepalive = 25\n"
 
 		if 'endpoint' in peer:
