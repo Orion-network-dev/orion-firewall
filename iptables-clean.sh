@@ -18,3 +18,5 @@ iptables -t mangle -F
 iptables -t mangle -X
 iptables -t raw -F
 iptables -t raw -X
+
+ipset destroy orion-routed

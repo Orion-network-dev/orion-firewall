@@ -27,16 +27,13 @@ iptables -t nat -A POSTROUTING \
     -m set --match-set orion-routed dst \
     -j SNAT --to-source 10.30.1.1
 
-FC=`cat orion_services`
 
-for kv in $"${FC[@]}" ; do
-    ORION_IP=${kv%%:*}
-    LOCAL_IP=${kv#*:}
+# In order to deploy a service, you simply need to add theses two lines
+# Where $LOCAL_IP is the local service you want to deploy
+# And $ORION_IP is the external orion ip to deploy to.
 
-    # Add to the allowed routed
-    ipset add orion-routed $LOCAL_IP/32
-
-    iptables -t nat -A PREROUTING \
-        -d $ORION_IP/32 \
-        -j DNAT --to-destination $LOCAL_IP
-done
+# ipset add orion-routed $LOCAL_IP/32
+# iptables -t nat -A PREROUTING \
+#     -d $ORION_IP/32 \
+#     -p tcp \
+#     -j DNAT --to-destination $LOCAL_IP
