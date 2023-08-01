@@ -25,8 +25,8 @@ iptables -A FORWARD -j DROP
 iptables -t nat -A POSTROUTING \
     -m set ! --match-set orion-routed src \
     -m set --match-set orion-routed dst \
+    -m devgroup --dst-group 2 \
     -j SNAT --to-source 10.30.1.1
-
 
 # In order to deploy a service, you simply need to add theses two lines
 # Where $LOCAL_IP is the local service you want to deploy
