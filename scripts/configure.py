@@ -2,7 +2,7 @@ import toml
 from utils import ip_bits_to_str, pairing
 
 def main():
-	# Lecture du fichier de configuration
+	# Reading the configuration file
 	with open('config.toml', 'r') as f:
 		config = toml.load(f)
 	
@@ -11,8 +11,8 @@ def main():
 
 	assert 0 < self_id <= 253, "Invalid id"
 
-	orion_network_conf = ""
-	orion_wireguard_conf = ""
+	orion_network_conf: str = ""
+	orion_wireguard_conf: str = ""
 	orion_wireguard_conf += f"[Interface]\n"
 	orion_wireguard_conf += f"Address = 10.30.255.{self_id}/24\n"
 	orion_wireguard_conf += f"PrivateKey = {private_key}\n"
@@ -58,7 +58,7 @@ def main():
 
 		if 'endpoint' in peer:
 			orion_wireguard_conf += f"Endpoint = {peer['endpoint']}\n"
-	
+
 	with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
 		networkfile.truncate(0)
 		networkfile.write(orion_network_conf)

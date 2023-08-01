@@ -1,0 +1,15 @@
+# Your Orion member id
+id = 1
+# You NEED to thange this value
+private_key = "4C1f6kU8YU1wqnk6q6UKukkf5prsjRX9+MyjzM+40Gg="
+# You can remove this line if you do not plan on openning a port on your router.
+listen = 45600
+
+[[peers]]
+id = 3
+public_key = "uD0Vix1BB7e5HJtxB92L8TRWBnq46e3BcD0zfUHoIUM="
+
+[[peers]]
+id = 6
+public_key = "ODkau+lFT22DLbKeQaNXiUp0uxVyRh2VhFs4gBZTMVQ="
+endpoint = "127.0.0.9:25000"
