@@ -5,6 +5,7 @@ private_key = "4C1f6kU8YU1wqnk6q6UKukkf5prsjRX9+MyjzM+40Gg="
 # You can remove this line if you do not plan on openning a port on your router.
 listen = 45600
 
+# Peers configuration
 [[peers]]
 id = 3
 public_key = "uD0Vix1BB7e5HJtxB92L8TRWBnq46e3BcD0zfUHoIUM="
