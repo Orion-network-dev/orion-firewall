@@ -5,8 +5,6 @@ ipset create orion-routed hash:net
 ipset add orion-routed 10.30.0.0/16
 ipset add orion-routed 172.16.0.0/15
 
-
-
 # Create a subchain
 iptables -N ext-orion
 
@@ -36,7 +34,7 @@ for kv in $"${FC[@]}" ; do
     LOCAL_IP=${kv#*:}
 
     # Add to the allowed routed
-    ipset add orion-routed $ORION_IP/32
+    ipset add orion-routed $LOCAL_IP/32
 
     iptables -t nat -A PREROUTING \
         -d $ORION_IP/32 \
