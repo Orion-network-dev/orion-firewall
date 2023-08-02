@@ -72,9 +72,6 @@ def main():
 		if 'endpoint' in peer:
 			orion_wireguard_conf += f"Endpoint = {peer['endpoint']}\n"
 
-	print(orion_wireguard_conf)
-	return
-
 	with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
 		networkfile.truncate(0)
 		networkfile.write(orion_network_conf)
