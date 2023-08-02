@@ -28,13 +28,13 @@ iptables -t nat -A POSTROUTING \
     -m set ! --match-set orion-net src \
     -m set --match-set orion-net dst \
     -m devgroup --dst-group 2 \
-    -j SNAT --to-source 10.30.1.1
+    -j SNAT --to-source 10.30.$ID.1
 
 iptables -t nat -A POSTROUTING \
     -m set --match-set orion-routed dst \
     -m set ! --match-set orion-net src \
     -m devgroup ! --dst-group 2 \
-    -j SNAT --to-source 10.30.1.1
+    -j SNAT --to-source 10.30.$ID.1
 
 # In order to deploy a service, you simply need to add theses two lines
 # Where $LOCAL_IP is the local service you want to deploy
