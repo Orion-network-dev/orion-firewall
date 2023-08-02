@@ -19,4 +19,7 @@ iptables -t mangle -X
 iptables -t raw -F
 iptables -t raw -X
 
+sleep 1
+
 ipset destroy orion-routed
+ipset destroy orion-net
