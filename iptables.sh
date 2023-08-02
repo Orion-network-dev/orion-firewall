@@ -1,7 +1,6 @@
 ## Build iptables rules
 
 # Setting up ipsets
-ipset create orion-routed hash:net
 ipset add orion-routed 10.30.0.0/16
 ipset add orion-routed 172.16.0.0/15
 
