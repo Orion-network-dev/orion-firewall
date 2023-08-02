@@ -61,7 +61,7 @@ def main():
 		orion_network_conf += f"	netmask 255.255.255.254\n"
 		orion_network_conf += f"	local 10.30.255.{self_id}\n"
 		orion_network_conf += f"	endpoint 10.30.255.{peer_id}\n"
-		orion_network_conf += f"	pre-up ip link set dev {interface_name} group 2\n"
+		orion_network_conf += f"	post-up ip link set dev {interface_name} group 2\n"
 		orion_network_conf += f"	mtu {mtu}\n"
 		
 
