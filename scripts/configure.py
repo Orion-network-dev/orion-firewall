@@ -1,5 +1,6 @@
 import toml
 from utils import ip_bits_to_str, pairing
+import ipaddress
 
 def main():
 	# Reading the configuration file
@@ -11,10 +12,16 @@ def main():
 
 	assert 0 < self_id <= 253, "Invalid id"
 
+	# Ips
+	ipv4 = ipaddress.IPv4Address("10.30.255.0") + self_id
+	ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + self_id
+
+	print(f"You are using the {ipv4} / {ipv6} address")
+
 	orion_network_conf: str = ""
 	orion_wireguard_conf: str = ""
 	orion_wireguard_conf += f"[Interface]\n"
-	orion_wireguard_conf += f"Address = 10.30.255.{self_id}/24\n"
+	orion_wireguard_conf += f"Address = {ipv4}/24,{ipv6}/120\n"
 	orion_wireguard_conf += f"PrivateKey = {private_key}\n"
 	orion_wireguard_conf += f"Table = off\n"
 
@@ -35,30 +42,38 @@ def main():
 		# All the Orion interconnect networks are in 172.16.0.0/15
 		# From (172.10.0.0 - 172.16.255.255). We need a /15 network because the subnet id
 		# is 16 bits long and we need anoter bit for two computers (/31 network point-to-point)
-		subnet_bits = 172 << 24 | 16 << 16 | interconnect_id << 1
+		subnet_v4 = ipaddress.IPv4Address("172.16.0.0") + (interconnect_id << 1)
+		subnet_v6 = ipaddress.IPv6Address("fc00:ffff:30:1::") + (interconnect_id << 1)
 
 		# To ensure consistency, we choose the peer with the highest id for the higest ip
-		self_address = ip_bits_to_str(subnet_bits if peer_id > self_id else subnet_bits + 1)
+		self_address_v4 = subnet_v4 if peer_id > self_id else subnet_v4 + 1
+		self_address_v6 = subnet_v6 if peer_id > self_id else subnet_v6 + 1
 
 		mtu = 1456
+
+		peer_ipv4 = ipaddress.IPv4Address("10.30.255.0") + peer_id
+		peer_ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + peer_id
 
 		orion_network_conf += f"auto {interface_name}\n"
 		orion_network_conf += f"iface {interface_name} inet tunnel\n"
 		orion_network_conf += f"	mode gre\n"
-		orion_network_conf += f"	address {self_address}\n"
+		orion_network_conf += f"	address {self_address_v4}\n"
 		orion_network_conf += f"	netmask 255.255.255.254\n"
 		orion_network_conf += f"	local 10.30.255.{self_id}\n"
 		orion_network_conf += f"	endpoint 10.30.255.{peer_id}\n"
 		orion_network_conf += f"	mtu {mtu}\n"
+		
 
 		orion_wireguard_conf += f"[Peer]\n"
 		orion_wireguard_conf += f"PublicKey = {peer_public_key}\n"
-		orion_wireguard_conf += f"AllowedIPs = 10.30.255.{peer_id}/32\n"
+		orion_wireguard_conf += f"AllowedIPs = {peer_ipv4}/32,{peer_ipv6}/120\n"
 		orion_wireguard_conf += f"PersistentKeepalive = 25\n"
 
 		if 'endpoint' in peer:
 			orion_wireguard_conf += f"Endpoint = {peer['endpoint']}\n"
 
+	print(orion_wireguard_conf)
+	return
 
 	with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
 		networkfile.truncate(0)
