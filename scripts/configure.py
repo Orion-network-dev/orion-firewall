@@ -49,7 +49,7 @@ def main():
 		self_address_v4 = subnet_v4 if peer_id > self_id else subnet_v4 + 1
 		self_address_v6 = subnet_v6 if peer_id > self_id else subnet_v6 + 1
 
-		mtu = 1500
+		mtu = 1368
 
 		peer_ipv4 = ipaddress.IPv4Address("10.30.255.0") + peer_id
 		peer_ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + peer_id
