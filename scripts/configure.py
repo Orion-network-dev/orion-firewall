@@ -40,7 +40,7 @@ def main():
 		# We compute the interconnect id
 		interconnect_id = pairing(peer_id,self_id)
 
-		# All the Orion interconnect networks are in 172.16.0.0/15
+		# All the Orion interconnect networks are in 172.30.0.0/15
 		# From (172.30.0.0 - 172.31.255.255). We need a /15 network because the subnet id
 		# is 16 bits long and we need anoter bit for two computers (/31 network point-to-point)
 		subnet_v4 = ipaddress.IPv4Address("172.30.0.0") + (interconnect_id << 1)
