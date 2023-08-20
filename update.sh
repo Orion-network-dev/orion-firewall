@@ -12,7 +12,7 @@ fi
 
 echo -e "\t Shutting down wireguard"
 # We down all wireguard tunnels
-systemctl down wg-quick@orion || true
+systemctl stop wg-quick@orion || true
 
 echo -e "\t Regenerating configurations"
 
