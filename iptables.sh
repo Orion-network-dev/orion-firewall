@@ -1,46 +1,60 @@
 ## Build iptables rules
 
-# Setting up ipsets
+# IPs allowed to be routed through orion
+# This includes by -default- all orion ips
+
+ipset -L orion-net > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Creating the Orion-net ipset..."
+    ipset create orion-net hash:net
+fi
 
 ipset add orion-net 10.30.0.0/16
-ipset add orion-net 172.16.0.0/15
+ipset add orion-net 172.30.0.0/15
 
-# Create a subchain
+ipset -L orion-routed > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Creating the Orion-routed ipset..."
+    ipset create orion-routed hash:net
+fi
+
+# We create a simple sub-chain to filter incoming packets from the orion interfaces
 iptables -N ext-orion
 
-# Accept traffic from the forwarded ips
-iptables -A ext-orion -m set --match-set orion-routed dst -j ACCEPT
-# We accept incoming traffic from orion.
-iptables -A ext-orion -m set --match-set orion-net dst -j ACCEPT
-# Allow conns that wera already established.
-iptables -A ext-orion -m state --state ESTABLISHED -j ACCEPT
-# We drop by default
-iptables -A ext-orion -j DROP
+iptables -A ext-orion \
+    -m set --match-set orion-routed dst \
+    -j ACCEPT \
+    --comment "Accept traffic destinated to a Orion-routed ip address"
 
-# We apply our rule to all the orion interfaces.
-iptables -A FORWARD -j ext-orion
-# We drop all other forwards.
-iptables -A FORWARD -j DROP
+iptables -A ext-orion \
+    -m set --match-set orion-net dst \
+    -j ACCEPT \
+    --comment "Accept traffic destinated to a Orion network"
 
-# Traffic to orion that is not in an orion subnet should be nat translated
-# This uses the 10.30.1.1 ip for all outoing connections.
+iptables -A ext-orion \
+    -m state --state ESTABLISHED \
+    -j ACCEPT \
+    --comment "Allow already established conns"
+
+iptables -A ext-orion \
+    -j DROP \
+    --comment "Drop packets by default"
+
+iptables -A FORWARD \
+    -m devgroup --src-group 2 \
+    -j ext-orion \
+    --comment "Allow forwarding given the forwarding rules for Orion"
+
 iptables -t nat -A POSTROUTING \
     -m set ! --match-set orion-net src \
     -m set --match-set orion-net dst \
     -m devgroup --dst-group 2 \
-    -j SNAT --to-source 10.30.$ID.1
+    -j MASQUERADE \
+    --comment "Packets with dst in orion-net which does not have a orion-net src and have a orion-interface routing target"
 
 iptables -t nat -A POSTROUTING \
     -m set --match-set orion-routed dst \
     -m set ! --match-set orion-net src \
     -m devgroup ! --dst-group 2 \
-    -j SNAT --to-source 10.30.$ID.1
-
-# In order to deploy a service, you simply need to add theses two lines
-# Where $LOCAL_IP is the local service you want to deploy
-# And $ORION_IP is the external orion ip to deploy to.
-
-# ipset add orion-routed $LOCAL_IP/32
-# iptables -t nat -A PREROUTING \
-#     -d $ORION_IP/32 \
-#     -j DNAT --to-destination $LOCAL_IP
+    -j MASQUERADE \
+    --comment "Packets which are dst to a locally-routed orion ip but do not have a orion-net ip and are not destinated to a orion-interface"

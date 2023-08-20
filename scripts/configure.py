@@ -1,5 +1,5 @@
 import toml
-from utils import ip_bits_to_str, pairing
+from utils import pairing
 import ipaddress
 
 def main():
@@ -25,8 +25,9 @@ def main():
 	orion_wireguard_conf += f"PrivateKey = {private_key}\n"
 	orion_wireguard_conf += f"Table = off\n"
 
+	self_listening = 'listen' in config
 	# If we need to listen, we simply add it to the wireguard config
-	if 'listen' in config:
+	if self_listening:
 		orion_wireguard_conf += f"ListenPort = {config['listen']}\n"
 	
 	# For each peer we have
@@ -34,15 +35,15 @@ def main():
 		peer_public_key: str = peer['public_key']
 		peer_id: int = peer['id']
 		# Name of the interface for the tunnel
-		interface_name: str = f"tunnel{peer_id}"
+		interface_name: str = f"orion{peer_id}"
 		
 		# We compute the interconnect id
 		interconnect_id = pairing(peer_id,self_id)
 
 		# All the Orion interconnect networks are in 172.16.0.0/15
-		# From (172.10.0.0 - 172.16.255.255). We need a /15 network because the subnet id
+		# From (172.30.0.0 - 172.31.255.255). We need a /15 network because the subnet id
 		# is 16 bits long and we need anoter bit for two computers (/31 network point-to-point)
-		subnet_v4 = ipaddress.IPv4Address("172.16.0.0") + (interconnect_id << 1)
+		subnet_v4 = ipaddress.IPv4Address("172.30.0.0") + (interconnect_id << 1)
 		subnet_v6 = ipaddress.IPv6Address("fc00:ffff:30:1::") + (interconnect_id << 1)
 
 		# To ensure consistency, we choose the peer with the highest id for the higest ip
@@ -72,6 +73,8 @@ def main():
 
 		if 'endpoint' in peer:
 			orion_wireguard_conf += f"Endpoint = {peer['endpoint']}\n"
+		elif not self_listening:
+			raise TypeError('Cannot connect to a peer without endpoint without being a listener')
 
 	with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
 		networkfile.truncate(0)
