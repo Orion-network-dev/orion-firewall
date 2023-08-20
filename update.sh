@@ -7,7 +7,7 @@ ORION_NET_FILE=/etc/network/interfaces.d/01-orion.conf
 # If the interfaces file exists, we must down all interfaces
 if test -f "$ORION_NET_FILE"; then
     echo -e "\t Downing interfaces"
-    ifdown -i $ORION_NET_FILE
+    ifdown -i $ORION_NET_FILE -a
 fi
 
 echo -e "\t Shutting down wireguard"
@@ -26,8 +26,7 @@ systemctl enable --now wg-quick@orion || true
 
 echo -e "\t Enabling interfaces"
 # Re-enable all interfaces
-ifup -i $ORION_NET_FILE
-
+ifup -i $ORION_NET_FILE -a
 
 echo -e "\t Applying iptables"
 # Apply the user rules
