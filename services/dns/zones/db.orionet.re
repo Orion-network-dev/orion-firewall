@@ -8,8 +8,9 @@ $ORIGIN orionet.re.
     3w  ; expiry
     2h  ; minimum
     )
-    IN  NS  nsx1.orion.matthieu-dev.xyz.
-    IN  NS  nsx2.orion.matthieu-dev.xyz.
+    IN  NS      nsx1.orion.matthieu-dev.xyz.
+    IN  NS      nsx2.orion.matthieu-dev.xyz.
+pki IN  CNAME   pki.1.orionet.re.
 
 $ORIGIN 1.orionet.re.
 @   IN  NS  ns

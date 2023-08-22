@@ -1,4 +1,14 @@
 version: '3'
 
 services:
-  
+  stepca:
+    image: smallstep/step-ca
+    ports:
+      - 443:443
+    environment:
+      - DOCKER_STEPCA_INIT_NAME=OrionCA
+      - DOCKER_STEPCA_INIT_DNS_NAMES=localhost,pki.orionet.re
+      - DOCKER_STEPCA_INIT_REMOTE_MANAGEMENT=true
+      - DOCKER_STEPCA_INIT_ACME=true
+    volumes:
+      - ./data:/home/step
