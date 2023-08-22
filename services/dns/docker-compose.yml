@@ -12,6 +12,7 @@ services:
       - ./bind:/etc/bind
       - cache:/var/cache/bind
       - ./zones:/var/lib/bind
+      - ./private:/etc/bind/private
 
 volumes:
   cache:
