@@ -2,7 +2,7 @@
 
 function route_ip {
     iptables add orion-routed $2/32
-    echo $3 | xargs iptables -t nat -A PREROUTING \
+    echo ${@:2} | xargs iptables -t nat -A PREROUTING \
         -d $1/32 \
         -j DNAT --to-destination $2
 }
