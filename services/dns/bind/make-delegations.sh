@@ -8,7 +8,7 @@ do
 
 cat << EOF >>forwards.conf
 zone "$i.orionet.re." {
-  type stub;
+  type slave;
   masters {
      10.30.$i.255;
   };
