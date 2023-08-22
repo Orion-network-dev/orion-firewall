@@ -8,11 +8,11 @@ do
 
 cat << EOF >>forwards.conf
 zone "$i.orionet.re" {
-    type forward;
-    forward only;
-    forwarders { 10.30.$i.255; };
+  type static-stub;  
+  server-addresses {
+     10.30.$i.255;
+  };
 };
-
 EOF
 
 done

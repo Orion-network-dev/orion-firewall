@@ -1,5 +1,5 @@
 $TTL 2d ; Default TTL for zone
-$ORIGIN 0.orionet.re.
+$ORIGIN orionet.re.
 
 @   IN  SOA nsx1.orion.matthieu-dev.xyz.  matthieu.matthieu-dev.xyz. (
     0   ; serial number
@@ -10,5 +10,5 @@ $ORIGIN 0.orionet.re.
     )
     IN  NS      nsx1.orion.matthieu-dev.xyz.
     IN  NS      nsx2.orion.matthieu-dev.xyz.
-pki IN  CNAME   pki.1.orionet.re.
 
+www IN  A       1.1.1.1
