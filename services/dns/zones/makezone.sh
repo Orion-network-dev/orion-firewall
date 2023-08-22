@@ -1,14 +1,5 @@
 cp db.orionet.re _ps
 
-for i in `seq 254`
-do
-cat <<END >> _ps
-\$ORIGIN $i.orionet.re.
-@   IN  NS  nsx1.orion.matthieu-dev.xyz.
-@   IN  NS  nsx2.orion.matthieu-dev.xyz.
-END
-done
-
 for key in `ls Korionet.re*.key`
 do
 echo "\$INCLUDE $key">> _ps
