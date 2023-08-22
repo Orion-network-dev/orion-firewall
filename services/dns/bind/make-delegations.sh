@@ -8,9 +8,13 @@ do
 
 cat << EOF >>forwards.conf
 zone "$i.orionet.re." {
-  type slave;
+  type stub;
   masters {
      10.30.$i.255;
+  };
+  forward only;
+  forwarders {
+    10.30.$i.255;
   };
 };
 EOF
