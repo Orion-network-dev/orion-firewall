@@ -12,6 +12,7 @@ zone "$i.orionet.re." {
   masters {
      10.30.$i.255;
   };
+  dialup passive;
 };
 EOF
 
