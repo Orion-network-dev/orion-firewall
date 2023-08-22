@@ -28,6 +28,8 @@ echo -e "\t Enabling interfaces"
 # Re-enable all interfaces
 ifup -i $ORION_NET_FILE -a
 
+./iptables-clean.sh
+
 echo -e "\t Applying iptables"
 # Apply the user rules
 ./iptables.sh `cat config.toml | tomlq .id`
