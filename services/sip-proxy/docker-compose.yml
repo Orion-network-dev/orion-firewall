@@ -1,4 +1,8 @@
 version: '3'
 
 services:
-  
+  sip-proxy:
+    image: kamailio/kamailio-ci
+    volumes:
+      - ./kamailio:/etc/kamailio
+    network_mode: host
