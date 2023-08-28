@@ -3,23 +3,6 @@
 # IPs allowed to be routed through orion
 # This includes by -default- all orion ips
 
-ipset -L orion-net > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "Creating the Orion-net ipset..."
-    ipset create orion-net hash:net
-fi
-
-ipset add orion-net 10.30.0.0/16
-ipset add orion-net 172.30.0.0/15
-
-ipset -L orion-routed > /dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "Creating the Orion-routed ipset..."
-    ipset create orion-routed hash:net
-fi
-
-# We create a simple sub-chain to filter incoming packets from the orion interfaces
-iptables -N ext-orion
 
 iptables -A ext-orion \
     -m set --match-set orion-net dst \
@@ -30,6 +13,10 @@ iptables -A ext-orion \
     -m state --state ESTABLISHED \
     -j ACCEPT \
     -m comment --comment "Allow already established conns"
+
+iptables -A ext-orion \
+    -j DROP \
+    -m comment --comment "Drop packets by default"
 
 iptables -A FORWARD \
     -m devgroup --src-group 2 \

@@ -33,14 +33,13 @@ ifup -i $ORION_NET_FILE -a
 echo -e "\t Applying iptables"
 
 # Apply the user rules
-./iptables.sh `cat config.toml | tomlq .id`
+./iptables-prelude.sh
+
 if test -f "./iptables-user.sh"; then
     echo -e "\t Apply user iptables rules"
     ./iptables-user.sh
 fi
 
-iptables -A ext-orion \
-    -j DROP \
-    -m comment --comment "Drop packets by default"
+./iptables.sh `cat config.toml | tomlq .id`
 
 netfilter-persistent save
