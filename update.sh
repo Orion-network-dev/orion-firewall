@@ -39,4 +39,8 @@ if test -f "./iptables-user.sh"; then
     ./iptables-user.sh
 fi
 
+iptables -A ext-orion \
+    -j DROP \
+    -m comment --comment "Drop packets by default"
+
 netfilter-persistent save
