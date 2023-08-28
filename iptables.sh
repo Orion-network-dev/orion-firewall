@@ -22,11 +22,6 @@ fi
 iptables -N ext-orion
 
 iptables -A ext-orion \
-    -m set --match-set orion-routed dst \
-    -j ACCEPT \
-    -m comment --comment "Accept traffic destinated to a Orion-routed ip address"
-
-iptables -A ext-orion \
     -m set --match-set orion-net dst \
     -j ACCEPT \
     -m comment --comment "Accept traffic destinated to a Orion network"

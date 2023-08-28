@@ -31,6 +31,7 @@ ifup -i $ORION_NET_FILE -a
 ./iptables-clean.sh
 
 echo -e "\t Applying iptables"
+
 # Apply the user rules
 ./iptables.sh `cat config.toml | tomlq .id`
 if test -f "./iptables-user.sh"; then
