@@ -5,6 +5,7 @@ services:
     build: .
     volumes:
       - ./kamailio:/etc/kamailio
-    network_mode: host
+    ports:
+      - 5060:5060
     dns: 
       - 10.30.0.1
