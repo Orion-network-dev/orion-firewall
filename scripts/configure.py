@@ -104,7 +104,8 @@ def main():
         template = template \
             .replace('%PEERS%', frr_peers) \
             .replace('%PEER_RULES%', frr_rules) \
-            .replace('%ASN%', asn)
+            .replace('%ASN%', str(asn)) \
+            .replace('%ORION_ID%', str(self_id))
         
         with open('/etc/frr/frr.conf', 'w') as frrconf:
             frrconf.truncate(0)
