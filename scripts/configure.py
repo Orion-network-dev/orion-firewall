@@ -11,7 +11,7 @@ def main():
 
     self_id: int = config['id']
     private_key: str = config['private_key']
-    asn: int = config['asn']
+    self_asn: int = config['asn']
 
     assert 0 < self_id <= 253, "Invalid id"
 
@@ -38,7 +38,7 @@ def main():
     for peer in config['peers']:
         peer_public_key: str = peer['public_key']
         peer_id: int = peer['id']
-        asn: int = peer['asn']
+        peer_asn: int = peer['asn']
 
         # Name of the interface for the tunnel
         interface_name: str = f"orion{peer_id}"
@@ -65,12 +65,12 @@ def main():
         peer_ipv4 = ipaddress.IPv4Address("10.30.255.0") + peer_id
         peer_ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + peer_id
 
-        frr_peers += f" neighbor orion{asn} peer-group\n"
-        frr_peers += f" neighbor orion{asn} remote-as {asn}\n"
-        frr_peers += f" neighbor {other_address_v4} peer-group orion{asn}\n"
+        frr_peers += f" neighbor orion{peer_asn} peer-group\n"
+        frr_peers += f" neighbor orion{peer_asn} remote-as {peer_asn}\n"
+        frr_peers += f" neighbor {other_address_v4} peer-group orion{peer_asn}\n"
 
-        frr_rules += f"  neighbor orion{asn} prefix-list orion in\n"
-        frr_rules += f"  neighbor orion{asn} prefix-list orion out\n"
+        frr_rules += f"  neighbor orion{peer_asn} prefix-list orion in\n"
+        frr_rules += f"  neighbor orion{peer_asn} prefix-list orion out\n"
 
         orion_network_conf += f"auto {interface_name}\n"
         orion_network_conf += f"iface {interface_name} inet tunnel\n"
@@ -104,7 +104,7 @@ def main():
         template = template \
             .replace('%PEERS%', frr_peers.removesuffix('\n')) \
             .replace('%PEER_RULES%', frr_rules.removesuffix('\n')) \
-            .replace('%ASN%', str(asn)) \
+            .replace('%ASN%', str(self_asn)) \
             .replace('%ORION_ID%', str(self_id))
         
         with open('/etc/frr/frr.conf', 'w') as frrconf:
