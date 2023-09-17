@@ -106,10 +106,7 @@ def main():
     frr_config += "ip prefix-list orion seq 10 permit 172.30.0.0/15 le 31 ge 31\n"
     frr_config += "ip prefix-list orion seq 15 permit 10.30.0.0/16 le 32 ge 24\n"
 
-    with open('frr_config', 'w') as frr_conf:
-        frr_conf.truncate(0)
-        frr_conf.write(frr_config)
-        frr_conf.close()
+    print(frr_config)
     
     with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
         networkfile.truncate(0)

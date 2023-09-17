@@ -16,8 +16,17 @@ systemctl stop wg-quick@orion || true
 
 echo -e "\t Regenerating configurations"
 
-# Ru configure script
-python3 ./scripts/configure.py
+# Run configure script
+frr=`python3 ./scripts/configure.py`
+
+FRR_TEMPL_FILE="./templ/frr.conf"
+if test -f "./templ/frr.user.conf"; then
+    FRR_TEMPL_FILE="./templ/frr.user.conf"
+fi
+
+echo -e "\t Writing frr config"
+
+cat $FRR_TEMPL_FILE | sed "s/%BGP%/$frr" > /etc/frr/frr.conf
 
 echo -e "\t Enabling wireguard"
 # Re-enable wireguard
