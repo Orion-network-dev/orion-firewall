@@ -21,7 +21,7 @@ if test -f "./templ/frr.user.conf"; then
     FRR_TEMPL_FILE="./templ/frr.user.conf"
 fi
 
-cat $FRR_TEMPL_FILE | sed '/%BGP%/q' > /etc/frr/frr.conf
+cat $FRR_TEMPL_FILE | sed '/%BGP%/Q' > /etc/frr/frr.conf
 
 # Run configure script
 python3 ./scripts/configure.py >> /etc/frr/frr.conf
