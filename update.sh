@@ -28,6 +28,7 @@ python3 ./scripts/configure.py >> /etc/frr/frr.conf
 
 cat $FRR_TEMPL_FILE | sed -e '1,/%BGP%/ d' >> /etc/frr/frr.conf
 
+
 echo -e "\t Enabling wireguard"
 # Re-enable wireguard
 systemctl enable --now wg-quick@orion || true
@@ -52,3 +53,5 @@ fi
 ./iptables.sh `cat config.toml | tomlq .id`
 
 netfilter-persistent save
+
+systemctl restart frr
