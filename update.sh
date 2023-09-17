@@ -26,7 +26,9 @@ fi
 
 echo -e "\t Writing frr config"
 
-cat $FRR_TEMPL_FILE | sed "s/%BGP%/$frr" > /etc/frr/frr.conf
+cat $FRR_TEMPL_FILE | sed "s/%BGP%/${frr//
+/\\n}" > /etc/frr/frr.conf
+
 
 echo -e "\t Enabling wireguard"
 # Re-enable wireguard
