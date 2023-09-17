@@ -1,6 +1,7 @@
 import toml
 from utils import pairing
 import ipaddress
+import os
 
 
 def main():
@@ -91,16 +92,25 @@ def main():
         elif not self_listening:
             raise TypeError(
                 'Cannot connect to a peer without endpoint without being a listener')
+    
+    template = './templ/frr.conf'
 
-    with open("./templ/frr.conf", 'r') as template:
+    if os.path.exists('./templ/frr.user.conf'):
+        template = './templ/frr.user.conf'
+
+    with open(template, 'r') as template:
         template = template.read()
 
-        template = template.replace('%PEERS%', frr_peers)
-        template = template.replace('%PEER_RULES%', frr_rules)
+        template = template \
+            .replace('%PEERS%', frr_peers) \
+            .replace('%PEER_RULES%', frr_rules) \
+            .replace('%ASN%', asn)
+        
+        with open('/etc/frr/frr.conf', 'w') as frrconf:
+            frrconf.truncate(0)
+            frrconf.write(template)
+            frrconf.close()
 
-        print(template)
-
-        pass
     with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
         networkfile.truncate(0)
         networkfile.write(orion_network_conf)
