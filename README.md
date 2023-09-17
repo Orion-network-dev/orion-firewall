@@ -7,7 +7,7 @@ Each participant of the network can publish ips or simply exist in the network.
 ## Required packages
 
 ```bash
-apt-get install git frr python3-full wireguard-tools iptables ipset iptables-persistent ipset-persistent netfilter-persistent
+apt-get install git frr python3-full wireguard-tools iptables ipset iptables-persistent ipset-persistent netfilter-persistent jq
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt

@@ -1,16 +1,14 @@
 # Your Orion member id
 id = 1
 # You NEED to thange this value
-private_key = "4C1f6kU8YU1wqnk6q6UKukkf5prsjRX9+MyjzM+40Gg="
-# You can remove this line if you do not plan on openning a port on your router.
-listen = 45600
+private_key = "8KgygvpN8j78VLO+ULIEwmfxBiPPEekOgiRbj5j0T3Q="
+# You can remove this line if you do not plan on openning  port on your router.
+# listen = 45600
+asn = 64517
 
 # Peers configuration
 [[peers]]
-id = 3
-public_key = "uD0Vix1BB7e5HJtxB92L8TRWBnq46e3BcD0zfUHoIUM="
-
-[[peers]]
-id = 6
-public_key = "ODkau+lFT22DLbKeQaNXiUp0uxVyRh2VhFs4gBZTMVQ="
-endpoint = "127.0.0.9:25000"
+id = 1
+public_key = "cD0RK3Jt5duamdeXkw57vzAkXo+7qxq+JXTUBzuCCxc="
+endpoint = "r1.peering.matthieu-dev.xyz:45600"
+asn = 64512
