@@ -102,8 +102,8 @@ def main():
         template = template.read()
 
         template = template \
-            .replace('%PEERS%', frr_peers) \
-            .replace('%PEER_RULES%', frr_rules) \
+            .replace('%PEERS%', frr_peers.removesuffix('\n')) \
+            .replace('%PEER_RULES%', frr_rules.removesuffix('\n')) \
             .replace('%ASN%', str(asn)) \
             .replace('%ORION_ID%', str(self_id))
         
