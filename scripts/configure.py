@@ -18,14 +18,8 @@ def main():
     ipv4 = ipaddress.IPv4Address("10.30.255.0") + self_id
     ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + self_id
 
-    frr_config = ""
-    frr_address_family = ""
-
-    frr_config += f"router bgp {asn}\n"
-    frr_config += " no bgp ebgp-requires-policy\n"
-    frr_config += " no bgp network import-check\n"
-
-    frr_address_family += " address-family ipv4 unicast\n"
+    frr_peers = ""
+    frr_rules = ""
 
     orion_network_conf: str = ""
     orion_wireguard_conf: str = ""
@@ -70,12 +64,12 @@ def main():
         peer_ipv4 = ipaddress.IPv4Address("10.30.255.0") + peer_id
         peer_ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + peer_id
 
-        frr_config += f" neighbor orion{asn} peer-group\n"
-        frr_config += f" neighbor orion{asn} remote-as {asn}\n"
-        frr_config += f" neighbor {other_address_v4} peer-group orion{asn}\n"
+        frr_peers += f" neighbor orion{asn} peer-group\n"
+        frr_peers += f" neighbor orion{asn} remote-as {asn}\n"
+        frr_peers += f" neighbor {other_address_v4} peer-group orion{asn}\n"
 
-        frr_address_family += f"  neighbor orion{asn} prefix-list orion in\n"
-        frr_address_family += f"  neighbor orion{asn} prefix-list orion out\n"
+        frr_rules += f"  neighbor orion{asn} prefix-list orion in\n"
+        frr_rules += f"  neighbor orion{asn} prefix-list orion out\n"
 
         orion_network_conf += f"auto {interface_name}\n"
         orion_network_conf += f"iface {interface_name} inet tunnel\n"
@@ -98,16 +92,15 @@ def main():
             raise TypeError(
                 'Cannot connect to a peer without endpoint without being a listener')
 
-    frr_address_family += " exit-address-family\n"
+    with open("./templ/frr.conf", 'r') as template:
+        template = template.read()
 
-    frr_config += " !\n"
-    frr_config += frr_address_family
-    frr_config += "!\n"
-    frr_config += "ip prefix-list orion seq 10 permit 172.30.0.0/15 le 31 ge 31\n"
-    frr_config += "ip prefix-list orion seq 15 permit 10.30.0.0/16 le 32 ge 24\n"
+        template = template.replace('%PEERS%', frr_peers)
+        template = template.replace('%PEER_RULES%', frr_rules)
 
-    print(frr_config)
-    
+        print(template)
+
+        pass
     with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
         networkfile.truncate(0)
         networkfile.write(orion_network_conf)
