@@ -7,6 +7,7 @@ This folder contains all configuration for the Orion services
 
 ## Orion Anycast ips
 
-* `10.30.0.1/32` => `dns.orionet.re`   orion dns recursor
-* `10.30.0.2/32` => `rpki.orionet.re`  orion rpki trust anchor
-* `10.30.0.3/32` => `sip.orionet.re`   orion sip proxy
+* `10.30.0.1/32` => `dns.orionet.re`        orion dns recursor
+* `10.30.0.2/32` => `rpki.orionet.re`       orion rpki trust anchor
+* `10.30.0.3/32` => `sip.orionet.re`        orion sip proxy
+* `10.30.0.4/32` => `routinator.orionet.re` orion routinator server
