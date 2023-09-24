@@ -8,15 +8,16 @@ $ORIGIN orionet.re.
     3w  ; expiry
     2h  ; minimum
     )
-    IN  NS      nsx1.orion.matthieu-dev.xyz.
-    IN  NS      nsx2.orion.matthieu-dev.xyz.
+@   IN  NS      nsx1.orion.matthieu-dev.xyz.
+@   IN  NS      nsx2.orion.matthieu-dev.xyz.
 
 ; Glue record for the orion ns
 ns      IN	A  41.213.187.32
 
-dns     IN  A   10.30.0.1
-rpki	IN	A   10.30.0.2
-sip		IN	A	10.30.0.3
+dns         IN  A   10.30.0.1
+rpki	    IN	A   10.30.0.2
+sip		    IN	A	10.30.0.3
+routinator  IN  A   10.30.0.4
 
 ; Zone for user 1
 1   IN  NS      ns
