@@ -14,12 +14,9 @@ services:
       dns:
         ipv4_address: 172.80.0.10
   unbound:
-    image: mvance/unbound
-    ports:
-      - 53:53/udp
-      - 53:53/tcp
+    image: mvance/unbound:latest
     volumes:
-      - ./forward-records.conf:/opt/unbound/etc/unbound/forward-records.conf:ro
+      - ./unbound.conf:/opt/unbound/etc/unbound/unbound.conf
     networks:
       dns:
         ipv4_address: 172.80.0.11
