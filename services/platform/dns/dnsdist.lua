@@ -14,7 +14,7 @@ packet_cache = newPacketCache(10000, {
 });
 
 -- Register our local bind server to resolve our domains recursively.
-newServer({ address = "172.20.0.3:53", pool = "resolve_domain" });
+newServer({ address = "172.80.0.3:53", pool = "resolve_domain" });
 
 -- For each orion member, we add an upstream object
 for index=1,254 do
