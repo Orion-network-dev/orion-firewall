@@ -11,9 +11,6 @@ $ORIGIN 0.30.10.in-addr.arpa.
 @   IN  NS      nsx1.orion.matthieu-dev.xyz.
 @   IN  NS      nsx2.orion.matthieu-dev.xyz.
 
-; Glue record for the orion ns
-ns      IN	A  41.213.187.32
-
 1   IN  PTR dns.orionet.re.
 2   IN  PTR rpki.orionet.re.
 3   IN  PTR sip.orionet.re.
