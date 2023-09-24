@@ -1,5 +1,5 @@
 $TTL 2d ; Default TTL for zone
-$ORIGIN 0.30.10.in-addr-arpa.
+$ORIGIN 0.30.10.in-addr.arpa.
 
 @   IN  SOA ns.orionet.re.  matthieu.matthieu-dev.xyz. (
     0   ; serial number
