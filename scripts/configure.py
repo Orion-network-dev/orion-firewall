@@ -71,6 +71,7 @@ def main():
 
         frr_rules += f"  neighbor orion{peer_asn} prefix-list orion in\n"
         frr_rules += f"  neighbor orion{peer_asn} prefix-list orion out\n"
+        frr_rules += f"  neighbor orion{peer_asn} route-map rpki in\n"
 
         orion_network_conf += f"auto {interface_name}\n"
         orion_network_conf += f"iface {interface_name} inet tunnel\n"
