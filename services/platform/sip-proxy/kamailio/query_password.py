@@ -38,7 +38,7 @@ def main():
     txts = [t for t in response.answer if t.rdtype == dns.rdatatype.TXT]
 
     if len(txts) == 1:
-        items = txts[0].items.keys()
+        items = txts[0]
         if len(items) == 1:
             print(str(list(items)[0])[1:-1])
 
