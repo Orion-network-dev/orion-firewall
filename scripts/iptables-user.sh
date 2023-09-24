@@ -12,4 +12,8 @@ function route_ip {
     echo ${@:3} | xargs iptables -t nat -A PREROUTING \
         -d $1/32 \
         -j DNAT --to-destination $2
+    # Rewrite packets when our host ties to communicate with our virtual ip
+    echo ${@:3} | xargs iptables -t nat -A OUTPUT \
+        -d $1/32 \
+        -j DNAT --to-destination $2
 }
