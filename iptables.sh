@@ -38,7 +38,7 @@ iptables -t nat -A POSTROUTING \
     -m comment --comment "Packets which are dst to a locally-routed orion ip but do not have a orion-net ip and are not destinated to a orion-interface"
 
 iptables -t nat -A POSTROUTING \
-    -d 172.30.0.0/15 \
+    -s 172.30.0.0/15 \
     -d 10.30.0.0/16 \
     -m devgroup --dst-group 2 \
     -j SNAT --to-source 10.30.$1.1
