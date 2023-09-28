@@ -24,8 +24,8 @@ iptables -A FORWARD \
     -m comment --comment "Allow forwarding given the forwarding rules for Orion"
 
 iptables -t nat -A POSTROUTING \
-    ! -s 10.30.0.0/16 \
-    -m set --match-set orion-net dst \
+    -m set ! --match-set orion-net src \
+    -d 10.30.0.0/16 \
     -m devgroup --dst-group 2 \
     -j SNAT --to-source 10.30.$1.1 \
     -m comment --comment "Packets with dst in orion-net which does not have a orion-net src and have a orion-interface routing target"
@@ -34,6 +34,5 @@ iptables -t nat -A POSTROUTING \
     -m set --match-set orion-routed dst \
     -m set ! --match-set orion-net src \
     -m devgroup ! --dst-group 2 \
-    ! --dport 179 \
     -j SNAT --to-source 10.30.$1.1 \
     -m comment --comment "Packets which are dst to a locally-routed orion ip but do not have a orion-net ip and are not destinated to a orion-interface"
