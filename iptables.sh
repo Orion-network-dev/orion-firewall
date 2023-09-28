@@ -24,7 +24,7 @@ iptables -A FORWARD \
     -m comment --comment "Allow forwarding given the forwarding rules for Orion"
 
 iptables -t nat -A POSTROUTING \
-    -m set ! --match-set orion-net src \
+    ! -s 10.30.0.0/16 \
     -m set --match-set orion-net dst \
     -m devgroup --dst-group 2 \
     -j SNAT --to-source 10.30.$1.1 \
