@@ -68,7 +68,7 @@ def main():
         mtu = 1368
 
         peer_ipv4 = ipaddress.IPv4Address("10.30.255.0") + peer_id
-        peer_ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + peer_id
+        # peer_ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + peer_id
 
         if not (peer_asn in groups):
             groups[peer_asn] = {
@@ -92,7 +92,7 @@ def main():
 
         orion_wireguard_conf += f"[Peer]\n"
         orion_wireguard_conf += f"PublicKey = {peer_public_key}\n"
-        orion_wireguard_conf += f"AllowedIPs = {peer_ipv4}/32,{peer_ipv6}/120\n"
+        orion_wireguard_conf += f"AllowedIPs = {peer_ipv4}/32\n"
         orion_wireguard_conf += f"PersistentKeepalive = 25\n"
 
         if 'endpoint' in peer:
