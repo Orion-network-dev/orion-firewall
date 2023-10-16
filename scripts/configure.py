@@ -2,7 +2,9 @@ import toml
 from utils import pairing
 import ipaddress
 import os
+import jinja2
 
+DO_SAVE = True
 
 def main():
     # Reading the configuration file
@@ -33,6 +35,9 @@ def main():
     # If we need to listen, we simply add it to the wireguard config
     if self_listening:
         orion_wireguard_conf += f"ListenPort = {config['listen']}\n"
+
+    groups = {}
+    peers = []
 
     # For each peer we have
     for peer in config['peers']:
@@ -65,13 +70,15 @@ def main():
         peer_ipv4 = ipaddress.IPv4Address("10.30.255.0") + peer_id
         peer_ipv6 = ipaddress.IPv6Address("fc00:ffff:30::") + peer_id
 
-        frr_peers += f" neighbor orion{peer_asn} peer-group\n"
-        frr_peers += f" neighbor orion{peer_asn} remote-as {peer_asn}\n"
-        frr_peers += f" neighbor {other_address_v4} peer-group orion{peer_asn}\n"
+        if not (peer_asn in groups):
+            groups[peer_asn] = {
+                'asn': peer_asn
+            }
 
-        frr_rules += f"  neighbor orion{peer_asn} prefix-list orion in\n"
-        frr_rules += f"  neighbor orion{peer_asn} prefix-list orion out\n"
-        frr_rules += f"  neighbor orion{peer_asn} route-map rpki in\n"
+        peers.append({
+            'address': other_address_v4,
+            'asn': peer_asn
+        })
 
         orion_network_conf += f"auto {interface_name}\n"
         orion_network_conf += f"iface {interface_name} inet tunnel\n"
@@ -93,35 +100,39 @@ def main():
         elif not self_listening:
             raise TypeError(
                 'Cannot connect to a peer without endpoint without being a listener')
-    
+
     template = './templ/frr.conf'
 
     if os.path.exists('./templ/frr.user.conf'):
         template = './templ/frr.user.conf'
 
-    with open(template, 'r') as template:
-        template = template.read()
+    env = jinja2.Environment()
+    f = open(template, 'r')
+    template = env.from_string(f.read(), {
+        'asn': self_asn,
+        'orion_id': self_id,
+        'peers': peers,
+        'groups': list(groups.values())
+    })
 
-        template = template \
-            .replace('%PEERS%', frr_peers.removesuffix('\n')) \
-            .replace('%PEER_RULES%', frr_rules.removesuffix('\n')) \
-            .replace('%ASN%', str(self_asn)) \
-            .replace('%ORION_ID%', str(self_id))
-        
+    frr_config = template.render()
+
+    if DO_SAVE:
         with open('/etc/frr/frr.conf', 'w') as frrconf:
             frrconf.truncate(0)
-            frrconf.write(template)
+            frrconf.write(frr_config)
             frrconf.close()
+        with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
+            networkfile.truncate(0)
+            networkfile.write(orion_network_conf)
+            networkfile.close()
 
-    with open('/etc/network/interfaces.d/01-orion.conf', 'w') as networkfile:
-        networkfile.truncate(0)
-        networkfile.write(orion_network_conf)
-        networkfile.close()
-
-    with open('/etc/wireguard/orion.conf', 'w') as wireguard:
-        wireguard.truncate(0)
-        wireguard.write(orion_wireguard_conf)
-        wireguard.close()
+        with open('/etc/wireguard/orion.conf', 'w') as wireguard:
+            wireguard.truncate(0)
+            wireguard.write(orion_wireguard_conf)
+            wireguard.close()
+    else:
+        print(frr_config)
 
 
 if __name__ == "__main__":
