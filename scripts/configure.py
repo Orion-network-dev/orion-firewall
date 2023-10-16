@@ -4,7 +4,7 @@ import ipaddress
 import os
 import jinja2
 
-DO_SAVE = False
+DO_SAVE = True
 
 def main():
     # Reading the configuration file
