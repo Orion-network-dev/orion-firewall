@@ -1,4 +1,1 @@
-config.toml
-iptabls-user.sh
-wg/
-__pycache__/
+iptables-user.sh
