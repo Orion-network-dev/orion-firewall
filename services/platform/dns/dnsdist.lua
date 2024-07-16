@@ -17,7 +17,7 @@ packet_cache = newPacketCache(10000, {
 newServer({ address = "172.80.0.3:53", pool = "resolve_domain" });
 
 -- For each orion member, we add an upstream object
-for index=1,254 do
+for index=1,1 do
 
 	-- Use lazy checking to avoid traffic across the network
 	newServer({
@@ -35,9 +35,9 @@ for index=1,254 do
 	});
 	getPool(index):setCache(packet_cache);
 	
-	-- Match *.{index}.orionet.re and *.{index}.30.10.in-addr.arpa to our upstream
+	-- Match *.{index}.member.orionet.re and *.{index}.30.10.in-addr.arpa to our upstream
 	suffix_node=newSuffixMatchNode();
-	suffix_node:add(index .. ".orionet.re");
+	suffix_node:add(index .. "member.orionet.re");
 	suffix_node:add(index .. ".30.10.in-addr.arpa");
 
 	-- We redirect all requests to the upstream
@@ -64,10 +64,10 @@ getPool("resolve_domain"):setCache(packet_cache);
 -- when used wihin our local address space.
 addAction(
 	{
-		"10.0.0.0/8",
-		"192.168.0.0/16",
-		"172.16.0.0/12",
-		"127.0.0.0/8"
+--		"10.0.0.0/8",
+--		"192.168.0.0/16",
+--		"172.16.0.0/12",
+--		"127.0.0.0/8"
 	},
 	PoolAction("resolve_domain")
 );

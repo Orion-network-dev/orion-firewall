@@ -8,28 +8,32 @@ services:
       - ./named.conf:/etc/bind/named.conf
       - bind_cache:/var/cache/bind
       - ./zones:/var/lib/bind
+    ports:
+      - '553:53/udp'
     networks:
       dns:
         ipv4_address: 172.80.0.3
+
   dnsdist:
-    image: tcely/dnsdist
+    image: ghcr.io/matthieucoder/orion-dns-reverse-proxy:master
     restart: unless-stopped
-    tty: true
-    stdin_open: true
-    command: ["--disable-syslog", "--uid", "dnsdist", "--gid", "dnsdist", "--verbose"]    
+    entrypoint: /dns-reverse-proxy
+    command:
+      - -default
+      - 172.80.0.3:53
     expose:
-      - '53'
+      - '53/udp'
       - '53/tcp'
     ports:
-      - '53:53'
+      - '53:53/tcp'
       - '53:53/udp'
     networks:
       dns:
         ipv4_address: 172.80.0.2
-    volumes:
-      - ./dnsdist.lua:/etc/dnsdist/dnsdist.conf:ro
+
 volumes:
   bind_cache:
+
 networks:
   dns:
     ipam:

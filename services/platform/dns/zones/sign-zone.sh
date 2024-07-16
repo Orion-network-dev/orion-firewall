@@ -1,5 +1,7 @@
 #!/bin/bash
 
+rm *.signed
+
 cp db.orionet.re _ps
 
 for key in `ls Korionet.re*.key`
