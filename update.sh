@@ -12,6 +12,6 @@ if test -f "./iptables-user.sh"; then
     ./iptables-user.sh
 fi
 
-./iptables.sh `cat config.toml | tomlq .id`
+./iptables.sh `cat user_id`
 
 netfilter-persistent save
