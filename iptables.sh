@@ -6,18 +6,13 @@
 
 iptables -A ext-orion \
     -m set --match-set orion-net dst \
-    -j ACCEPT \
-    -m comment --comment "Accept traffic destinated to a Orion network"
-
+    -j ACCEPT
 iptables -A ext-orion \
     -m state --state ESTABLISHED \
-    -j ACCEPT \
-    -m comment --comment "Allow already established conns"
+    -j ACCEPT
 
 iptables -A ext-orion \
-    -j DROP \
-    -m comment --comment "Drop packets by default"
-
+    -j DROP
 
 iptables -A FORWARD \
     -m devgroup --src-group 30 \
