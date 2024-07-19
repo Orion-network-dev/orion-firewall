@@ -9,7 +9,7 @@
 --depends openssl
 --description "Various utilities and scripts relate to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
---maintainer "Matthieu Pignolet <oron-release@mpgn.dev>"
+--maintainer "Matthieu Pignolet <orion-release@mpgn.dev>"
 
 bin/internal=/usr/lib/orion-firewall/internal
 bin/prelude=/usr/lib/orion-firewall/prelude

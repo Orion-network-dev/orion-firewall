@@ -1,0 +1,13 @@
+name: Release
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: bpicode/github-action-fpm@master
+      with:
+        fpm_args: '.'
+        fpm_opts: '--debug -t deb'
