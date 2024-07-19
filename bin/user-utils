@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Simple function to add add a IP redirection
 # Used like so: route_ip "<orion ip>" "<local ip>" <(optional) iptables options>
 function route_ip {

@@ -1,0 +1,21 @@
+-s dir
+--name orion-firewall
+--architecture all
+--depends bash
+--depends iptables-persistent
+--depends netfilter-persistent
+--depends ipset-persistent
+--depends ipset
+--description "Various utilities and scripts relate to Orion's routing"
+--url "https://github.com/Orion-network-dev/orion-firewall"
+--maintainer "Matthieu Pignolet <oron-release@mpgn.dev>"
+
+bin/internal=/usr/lib/orion-firewall/internal
+bin/prelude=/usr/lib/orion-firewall/prelude
+bin/clean=/usr/lib/orion-firewall/clean
+bin/user-utils=/usr/lib/orion-firewall/user-utils
+bin/member-id=/usr/lib/orion-firewall/member-id
+
+iptables-user=/etc/orion-firewall/configuration
+
+bin/update=/bin/orion-fw-update

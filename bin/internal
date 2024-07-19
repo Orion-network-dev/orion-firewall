@@ -1,8 +1,4 @@
-## Build iptables rules
-
-# IPs allowed to be routed through orion
-# This includes by -default- all orion ips
-
+#!/bin/bash
 
 iptables -A ext-orion \
     -m set --match-set orion-net dst \
