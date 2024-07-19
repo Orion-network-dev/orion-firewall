@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo -e "\t Trying to determine the memberID"
 MEMBER_ID=$(/usr/lib/orion-firewall/member-id)
 if [ -z "${MEMBER_ID}" ]; then

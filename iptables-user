@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# This contains Orion-related firewall scripts
+# which is necessary to route packets correctly
+# feel free to go see them!
 . /usr/lib/orion-firewall/user-utils
 
 # Exposer un serveur (tout les ports acceptés)
