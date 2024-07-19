@@ -6,6 +6,7 @@
 --depends netfilter-persistent
 --depends ipset-persistent
 --depends ipset
+--depends openssl
 --description "Various utilities and scripts relate to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
 --maintainer "Matthieu Pignolet <oron-release@mpgn.dev>"
