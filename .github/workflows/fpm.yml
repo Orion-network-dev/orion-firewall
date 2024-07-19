@@ -11,6 +11,7 @@ jobs:
       with:
         fpm_args: '.'
         fpm_opts: '-t deb'
+    - run: mkdir -p output-apt-repo/orion-firewall/
     - uses: actions/checkout@v4
       with:
         repository: Orion-network-dev/apt-registry
@@ -25,5 +26,5 @@ jobs:
         source-directory: 'output-apt-repo/'
         destination-github-username: 'Orion-network-dev'
         destination-repository-name: 'apt-registry'
-        user-email: 'orion+backbone@mpgn.dev'
+        user-email: 'orion+firewall@mpgn.dev'
         target-branch: main
