@@ -11,11 +11,11 @@ jobs:
       with:
         fpm_args: '.'
         fpm_opts: '-t deb'
-    - run: mkdir -p output-apt-repo/orion-firewall/
     - uses: actions/checkout@v4
       with:
         repository: Orion-network-dev/apt-registry
         path: output-apt-repo/
+    - run: mkdir -p output-apt-repo/orion-firewall/
     - run: cp orion*.deb output-apt-repo/orion-firewall/
     - run: rm -rf output-apt-repo/.git
     - name: Pushes to the apt repository
