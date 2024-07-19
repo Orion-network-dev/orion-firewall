@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Permet la génération des paquets debian
 TAG=$(git describe --tags $(git rev-list --tags --max-count=1))
