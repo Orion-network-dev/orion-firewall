@@ -10,14 +10,13 @@
 --description "Various utilities and scripts relate to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
 --maintainer "Matthieu Pignolet <orion-release@mpgn.dev>"
---after-install /usr/lib/orion-firewall/postinstall
+--after-install postinstall
 
 bin/internal=/usr/lib/orion-firewall/internal
 bin/prelude=/usr/lib/orion-firewall/prelude
 bin/clean=/usr/lib/orion-firewall/clean
 bin/user-utils=/usr/lib/orion-firewall/user-utils
 bin/member-id=/usr/lib/orion-firewall/member-id
-postinstall=/usr/lib/orion-firewall/postinstall
 
 iptables-user=/etc/orion-firewall/configuration
 
