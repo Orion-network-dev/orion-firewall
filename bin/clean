@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export IPTABLES_FLAG="-R"
+export IPTABLES_FLAG="-D"
 
 if test -f "/etc/orion-firewall/configuration"; then
     echo "Removing the user rules"
