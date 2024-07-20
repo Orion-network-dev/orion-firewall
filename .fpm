@@ -10,6 +10,7 @@
 --description "Various utilities and scripts relate to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
 --maintainer "Matthieu Pignolet <orion-release@mpgn.dev>"
+--after-install /bin/orion-fw-update
 
 bin/internal=/usr/lib/orion-firewall/internal
 bin/prelude=/usr/lib/orion-firewall/prelude
