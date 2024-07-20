@@ -4,18 +4,18 @@
 # Used like so: route_ip "<orion ip>" "<local ip>" <(optional) iptables options>
 function route_ip {
     ipset add orion-routed $2/32
-    iptables -t nat -A POSTROUTING -s $2 -m devgroup --dst-group 30 -j SNAT --to-source $1
+    iptables -t nat "${IPTABLES_FLAG}" POSTROUTING -s $2 -m devgroup --dst-group 30 -j SNAT --to-source $1
     
     # Accept incoming packets from orion interfaces by allowing using the ext-orion chain
-    echo ${@:3} | xargs iptables -A ext-orion \
+    echo ${@:3} | xargs iptables "${IPTABLES_FLAG}" ext-orion \
         -d $2 \
         -j ACCEPT
     # Rewrite packets to the destination host.
-    echo ${@:3} | xargs iptables -t nat -A PREROUTING \
+    echo ${@:3} | xargs iptables -t nat "${IPTABLES_FLAG}" PREROUTING \
         -d $1/32 \
         -j DNAT --to-destination $2
     # Rewrite packets when our host ties to communicate with our virtual ip
-    echo ${@:3} | xargs iptables -t nat -A OUTPUT \
+    echo ${@:3} | xargs iptables -t nat "${IPTABLES_FLAG}" OUTPUT \
         -d $1/32 \
         -j DNAT --to-destination $2
 }

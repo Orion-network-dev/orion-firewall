@@ -1,27 +1,24 @@
 #!/bin/bash
 
-# Accept all traffic first to avoid ssh lockdown  via iptables firewall rules #
-iptables -P INPUT ACCEPT
-iptables -P FORWARD ACCEPT
-iptables -P OUTPUT ACCEPT
- 
-# Flush All Iptables Chains/Firewall rules #
-iptables -F
- 
-# Delete all Iptables Chains #
-iptables -X
- 
-# Flush all counters too #
-iptables -Z 
-# Flush and delete all nat and  mangle #
-iptables -t nat -F
-iptables -t nat -X
-iptables -t mangle -F
-iptables -t mangle -X
-iptables -t raw -F
-iptables -t raw -X
+export IPTABLES_FLAG="-R"
 
-sleep 1
+if test -f "/etc/orion-firewall/configuration"; then
+    echo "Removing the user rules"
+    /etc/orion-firewall/configuration
+fi
 
+echo "Removing the global configuration"
+/usr/lib/orion-firewall/internal "$1"
+
+# Delete the ext-orion chain 
+iptables -F ext-orion
+iptables -X ext-orion
+
+# Wait for the ipset rules to actually register
+sleep 0.1
+# Delete the ipset sets
 ipset destroy orion-routed
 ipset destroy orion-net
+
+# Save the settings
+netfilter-persistent save

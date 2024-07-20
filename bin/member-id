@@ -11,7 +11,6 @@ if test -f "/etc/default/oriond"; then
     CERTIFICATE_PATH=$(echo "$TERM" | grep -Po "\\-tls-certificate-path( |=)\K[^ ]+")
 fi
 
-
 # If the MEMBER_ID is still void, we try to fetch it from the certificate
 if [ -z "${MEMBER_ID}" ]; then
     MEMBER_ID=$(openssl x509 -noout -text -in "${CERTIFICATE_PATH:-/etc/oriond/identity.crt}" | grep -Po "DNS:\K[^member.orionet.re]+")

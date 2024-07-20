@@ -1,24 +1,27 @@
 #!/bin/bash
 
-echo -e "\t Trying to determine the memberID"
+echo -e "Trying to determine the memberID"
 MEMBER_ID=$(/usr/lib/orion-firewall/member-id)
 if [ -z "${MEMBER_ID}" ]; then
     echo -e "Failed to determine the memberID"
     exit 1;
 fi
 
-/usr/lib/orion-firewall/clean
-echo -e "\t Applying the iptables prelude"
+/usr/lib/orion-firewall/clean "$MEMBER_ID"
+
+# Specify that we want to create rules
+export IPTABLES_FLAG="-A"
+
+echo "Applying the iptables prelude"
 /usr/lib/orion-firewall/prelude
 
 if test -f "/etc/orion-firewall/configuration"; then
-    echo -e "\t Apply user iptables rules"
+    echo "Apply user iptables rules"
     /etc/orion-firewall/configuration
 fi
 
-echo -e "\t Applying the global Orion configuration"
-/usr/lib/orion-firewall/internal $MEMBER_ID
+echo "Applying the global Orion configuration"
+/usr/lib/orion-firewall/internal "$MEMBER_ID"
 
-echo -e "\t Saving the ipset(s) and iptables rules"
+echo "Saving the ipset(s) and iptables rules"
 netfilter-persistent save
-
