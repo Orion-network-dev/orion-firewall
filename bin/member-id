@@ -5,8 +5,8 @@ MEMBER_ID=""
 CERTIFICATE_PATH=""
 
 # If the env file exists, we try to find a -override-member-id argument
-if test -f ".env"; then
-    . .env;
+if test -f "/etc/default/oriond"; then
+    . /etc/default/oriond;
     MEMBER_ID=$(echo "$TERM" | grep -Po "\\-override-member-id( |=)\K[^ ]+")
     CERTIFICATE_PATH=$(echo "$TERM" | grep -Po "\\-tls-certificate-path( |=)\K[^ ]+")
 fi
