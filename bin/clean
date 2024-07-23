@@ -20,5 +20,3 @@ sleep 0.1
 ipset destroy orion-routed
 ipset destroy orion-net
 
-# Save the settings
-netfilter-persistent save

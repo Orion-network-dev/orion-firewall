@@ -24,6 +24,3 @@ fi
 
 echo "Applying the global Orion configuration"
 /usr/lib/orion-firewall/internal "$MEMBER_ID"
-
-echo "Saving the ipset(s) and iptables rules"
-netfilter-persistent save
