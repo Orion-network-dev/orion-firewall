@@ -2,9 +2,6 @@
 --name orion-firewall
 --architecture all
 --depends bash
---depends iptables-persistent
---depends netfilter-persistent
---depends ipset-persistent
 --depends ipset
 --depends openssl
 --description "Various utilities and scripts relate to Orion's routing"
@@ -21,3 +18,5 @@ bin/member-id=/usr/lib/orion-firewall/member-id
 iptables-user=/etc/orion-firewall/configuration
 
 bin/update=/bin/orion-fw-update
+
+orion-firewall.service=/etc/systemd/system/orion-firewall.service
