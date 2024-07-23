@@ -2,9 +2,9 @@
 
 export IPTABLES_FLAG="-D"
 
-if test -f "/etc/orion-firewall/configuration"; then
-    echo "Removing the user rules"
-    /etc/orion-firewall/configuration
+if test -f "/usr/lib/orion-firewall/.user-confiugration"; then
+    echo "Removing the old user rules"
+    /usr/lib/orion-firewall/.user-confiugration
 fi
 
 echo "Removing the global configuration"
