@@ -19,7 +19,7 @@ if test -f "/etc/orion-firewall/configuration"; then
     echo "Apply user iptables rules"
     /etc/orion-firewall/configuration
     # Save the user configuration for future cleans
-    cp /etc/orion-firewall/configuration /usr/lib/orion-firewall/.user-confiugration
+    cp /etc/orion-firewall/configuration /usr/lib/orion-firewall/.user-conf
 fi
 
 echo "Applying the global Orion configuration"
