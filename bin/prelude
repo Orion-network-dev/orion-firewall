@@ -15,5 +15,15 @@ if [ $? -ne 0 ]; then
     ipset create orion-routed hash:net
 fi
 
+ipset -L private-ips > /dev/null 2>&1
+if [ $? -ne 0 ]; then
+    echo "Creating the Private-ips ipset..."
+    ipset create private-ips hash:net
+fi
+
+ipset add private-ips 10.0.0.0/8
+ipset add private-ips 172.16.0.0/12
+ipset add private-ips 192.168.0.0/16
+
 # We create a simple sub-chain to filter incoming packets from the orion interfaces
 iptables -N ext-orion
