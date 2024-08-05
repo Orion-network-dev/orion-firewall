@@ -13,8 +13,8 @@ iptables "${IPTABLES_FLAG}" ext-orion \
 
 if [[ "$IPTABLES_FLAG" == "-A" ]]
 then
-    export IPTABLES_FLAG="-I "
-    export IPTABLES_FLAG_AFTER_CHAIN="1"
+    export IPTABLES_FLAG="-I 1"
+    export IPTABLES_FLAG_AFTER_CHAIN=""
 fi
 
 iptables "${IPTABLES_FLAG}" FORWARD "${IPTABLES_FLAG_AFTER_CHAIN}" \
