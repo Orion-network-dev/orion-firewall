@@ -12,11 +12,10 @@ iptables "${IPTABLES_FLAG}" ext-orion \
     -j DROP
 
 if [[ "$IPTABLES_FLAG" == "-A" ]]
-do
+then
     export IPTABLES_FLAG="-I "
     export IPTABLES_FLAG_AFTER_CHAIN="1"
-done
-
+fi
 
 iptables "${IPTABLES_FLAG}" FORWARD "${IPTABLES_FLAG_AFTER_CHAIN}" \
     -m devgroup --src-group 30 \
