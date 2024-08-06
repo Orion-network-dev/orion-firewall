@@ -3,19 +3,25 @@
 # Simple function to add add a IP redirection
 # Used like so: route_ip "<orion ip>" "<local ip>" <(optional) iptables options>
 function route_ip {
+    if [[ "$IPTABLES_FLAG" == "-A" ]]
+    then
+        export IPTABLES_FLAG="-I"
+        export FLAG="1"
+    fi
+    
     ipset add orion-routed $2/32
-    iptables -t nat "${IPTABLES_FLAG}" POSTROUTING -s $2 -m devgroup --dst-group 30 -j SNAT --to-source $1
+    iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} -s $2 -m devgroup --dst-group 30 -j SNAT --to-source $1
     
     # Accept incoming packets from orion interfaces by allowing using the ext-orion chain
-    echo ${@:3} | xargs iptables "${IPTABLES_FLAG}" ext-orion \
-        -d $2 \
-        -j ACCEPT
+    echo ${@:3} | xargs iptables "${IPTABLES_FLAG}" ext-orion ${FLAG:+"$FLAG"} \
+    -d $2 \
+    -j ACCEPT
     # Rewrite packets to the destination host.
-    echo ${@:3} | xargs iptables -t nat "${IPTABLES_FLAG}" PREROUTING \
-        -d $1/32 \
-        -j DNAT --to-destination $2
+    echo ${@:3} | xargs iptables -t nat "${IPTABLES_FLAG}" PREROUTING ${FLAG:+"$FLAG"} \
+    -d $1/32 \
+    -j DNAT --to-destination $2
     # Rewrite packets when our host ties to communicate with our virtual ip
-    echo ${@:3} | xargs iptables -t nat "${IPTABLES_FLAG}" OUTPUT \
-        -d $1/32 \
-        -j DNAT --to-destination $2
+    echo ${@:3} | xargs iptables -t nat "${IPTABLES_FLAG}" OUTPUT ${FLAG:+"$FLAG"} \
+    -d $1/32 \
+    -j DNAT --to-destination $2
 }
