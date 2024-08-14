@@ -42,7 +42,7 @@ iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
 
 iptables "${IPTABLES_FLAG}" FORWARD ${FLAG:+"$FLAG"} \
     -m set ! --match-set orion-routed dst \
-    -s 10.30.$1.0/24 \
+    -d 10.30.$1.0/24 \
     -j REJECT
 iptables "${IPTABLES_FLAG}" OUTPUT ${FLAG:+"$FLAG"} \
     -m set ! --match-set orion-routed dst \
