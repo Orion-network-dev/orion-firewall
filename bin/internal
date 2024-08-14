@@ -40,7 +40,11 @@ iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
     -m devgroup --dst-group 30 \
     -j SNAT --to-source 10.30.$1.1
 
-iptables "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
+iptables "${IPTABLES_FLAG}" FORWARD ${FLAG:+"$FLAG"} \
+    -m set ! --match-set orion-routed dst \
+    -s 10.30.$1.0/24 \
+    -j REJECT
+iptables "${IPTABLES_FLAG}" OUTPUT ${FLAG:+"$FLAG"} \
     -m set ! --match-set orion-routed dst \
     -s 10.30.$1.0/24 \
     -j REJECT
