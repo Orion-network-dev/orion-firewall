@@ -12,6 +12,8 @@ fi
 # Specify that we want to create rules
 export IPTABLES_FLAG="-A"
 
+echo "Applying the iptables prelude"
+/usr/lib/orion-firewall/prelude
 
 if test -f "/etc/orion-firewall/configuration"; then
     echo "Apply user iptables rules"
@@ -20,8 +22,6 @@ if test -f "/etc/orion-firewall/configuration"; then
     cp /etc/orion-firewall/configuration /usr/lib/orion-firewall/.user-conf
 fi
 
-echo "Applying the iptables prelude"
-/usr/lib/orion-firewall/prelude
 
 echo "Applying the global Orion configuration"
 /usr/lib/orion-firewall/internal "$MEMBER_ID"
