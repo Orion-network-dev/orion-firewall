@@ -41,6 +41,6 @@ iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
     -j SNAT --to-source 10.30.$1.1
 
 iptables "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
-    -m set ! --match-set orion-routed \
+    -m set ! --match-set orion-routed dst \
     -s 10.30.$1.0/24 \
     -j REJECT
