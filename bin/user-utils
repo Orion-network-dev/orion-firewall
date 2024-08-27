@@ -10,7 +10,12 @@ function route_ip {
     fi
     
     ipset add orion-routed $2/32
-    iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} -s $2 -m devgroup --dst-group 30 -j SNAT --to-source $1
+
+    # Change the source ip for this address / port
+    echo ${@:3} | iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
+        -s $2 \
+        -m devgroup --dst-group 30 \
+        -j SNAT --to-source $1
     
     # Accept incoming packets from orion interfaces by allowing using the ext-orion chain
     echo ${@:3} | xargs iptables "${IPTABLES_FLAG}" ext-orion ${FLAG:+"$FLAG"} \
