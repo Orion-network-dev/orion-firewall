@@ -12,7 +12,7 @@ function route_ip {
     ipset add orion-routed $2/32
 
     # Change the source ip for this address / port
-    echo ${@:3} | iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
+    iptables -t nat "${IPTABLES_FLAG}" POSTROUTING ${FLAG:+"$FLAG"} \
         -s $2 \
         -m devgroup --dst-group 30 \
         -j SNAT --to-source $1
