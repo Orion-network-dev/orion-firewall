@@ -1,6 +1,6 @@
 #!/bin/sh
 
-content='include "/etc/orion-firwall/nftables.conf"'
+content='include "/etc/orion-firweall/nftables.conf"'
 file=/etc/nftables.conf
 
 grep -qxF "$content" "$file" || echo "$content" >> "$file"
