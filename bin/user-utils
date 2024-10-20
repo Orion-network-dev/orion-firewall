@@ -6,7 +6,7 @@ sed "/__TODO__/c\define myself = 10.30.$MEMBER_ID.0" /etc/orion-firewall/nftable
 /etc/nftables.conf
 
 # Simple function to add add a IP redirection
-# Used like so: route_ip "<orion ip>" "<local ip>" <(optional) iptables options>
+# Used like so: route_ip "<orion ip>" "<local ip>" "<port>"
 function route_ip {
     orionAddress=$1
     localAddress=$2
@@ -20,3 +20,4 @@ function route_ip {
     nft add element inet orion icmp_map { $orionAddress : $localAddress }
     nft add element inet orion snat_icmp_map { $localAddress : $orionAddress }
 }
+
