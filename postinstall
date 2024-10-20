@@ -1,3 +1,7 @@
 #!/bin/sh
 
-orion-fw-update
+content='include "/etc/orion-firwall/nftables.conf"'
+file=/etc/nftables.conf
+
+grep -qxF "$content" "$file" || echo "$content" >> "$file"
+/etc/orion-firewall/configuration
