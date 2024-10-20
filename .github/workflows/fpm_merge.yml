@@ -16,3 +16,8 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - run: gem install fpm
     - run: ./build.sh
+    - uses: actions/upload-artifact@v4
+      with:
+        name: deb
+        path: |
+          *.deb
