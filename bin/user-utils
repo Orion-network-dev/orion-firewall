@@ -2,7 +2,7 @@
 
 # Update the nftables rules with the user id
 MEMBER_ID=$(/usr/lib/orion-firewall/member-id)
-sed "/__TODO__/c\define myself = $MEMBER_ID" /etc/orion-firewall/nftables.conf.tmpl > /etc/orion-firewall/nftables.conf
+sed "/__TODO__/c\define myself = 10.30.$MEMBER_ID.0" /etc/orion-firewall/nftables.conf.tmpl > /etc/orion-firewall/nftables.conf
 /etc/nftables.conf
 
 # Simple function to add add a IP redirection
