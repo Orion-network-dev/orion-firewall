@@ -2,8 +2,6 @@ name: Merge Request Check
 
 on:
   push:
-    tags-ignore:
-      - '**'
 
 jobs:
   build:
