@@ -14,4 +14,5 @@ bin/member-id=/usr/lib/orion-firewall/member-id
 
 
 iptables-user=/etc/orion-firewall/configuration
-nftables.d/nftables.conf=/etc/orion-firwall/nftables.conf
+nftables.d/nftables.conf=/etc/orion-firwall/nftables.conf.tmpl
+
