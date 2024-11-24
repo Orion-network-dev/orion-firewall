@@ -214,7 +214,7 @@ def main():
             "table": "orion",
             "chain": "prerouting",
             "expr": [
-                { "jump": { "target": "orionNatPreRouting"}  }
+                { "goto": { "target": "orionNatPreRouting"}  }
             ]
         }),
         make("add", "rule", {
@@ -222,7 +222,7 @@ def main():
             "table": "orion",
             "chain": "output",
             "expr": [
-                { "jump": { "target": "orionNatPreRouting" } }
+                { "goto": { "target": "orionNatPreRouting" } }
             ]
         }),
     ]
