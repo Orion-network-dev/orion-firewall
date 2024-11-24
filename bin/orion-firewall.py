@@ -13,7 +13,7 @@ def main():
         config = toml.load(f)
     
     id = config["memberID"]
-    exposed = config["expose"]
+    exposed = ports_map(config["expose"])
     
     myself = "10.30.%s.0" % id
 
@@ -86,6 +86,7 @@ def main():
             "table": "orion",
             "chain": "orionForward",
             "expr": [
+                NFT_ORION_IINT_GROUP,
                 NFT_REJECT,
             ]
         })
@@ -145,14 +146,9 @@ def main():
                         "field": "daddr",
                     },
                 }, NFT_ORION_PREFIX),
-                make_expr("!=", {
-                    "meta": {
-                        "key": "iifgroup",
-                    },
-                }, "30"),
                 {
                     "snat": {
-                        "addr": myself,
+                        "addr": exo["address"],
                     }
                 }
             ]
@@ -175,9 +171,9 @@ def main():
                         "field": "daddr",
                     },
                 }, NFT_ORION_PREFIX),
-                make_expr("==", {
+                make_expr("!=", {
                     "meta": {
-                        "key": "oifgroup",
+                        "key": "iifgroup",
                     },
                 }, "30"),
                 {
@@ -192,19 +188,19 @@ def main():
     o6_hooks = [ # We add all chain that hook into the packets
         make_chain("postrouting", "orion", "inet", "nat", {
             "hook": "postrouting",
-            "prio": 1000,
+            "prio": -1,
         }),
         make_chain("output", "orion", "inet", "nat", {
             "hook": "output",
-            "prio": 1000,
+            "prio": -1,
         }),
         make_chain("forward", "orion", "inet", "filter", {
             "hook": "forward",
-            "prio": 1000,
+            "prio": -1,
         }),
         make_chain("prerouting", "orion", "inet", "nat", {
             "hook": "prerouting",
-            "prio": 1000,
+            "prio": -1,
         }),
     ]
     
@@ -233,6 +229,14 @@ def main():
                 { "goto": { "target": "orionNatPreRouting" } }
             ]
         }),
+        make("add", "rule", {
+            "family": "inet",
+            "table": "orion",
+            "chain": "forward",
+            "expr": [
+                { "goto": { "target": "orionForward" } }
+            ]
+        })
     ]
     
     ops = o1_create_tables \

@@ -8,6 +8,15 @@ NFT_ORION_OINT_GROUP = {
         "right": 30,
     }
 }
+NFT_ORION_IINT_GROUP = {
+    "match": {
+        "op": "==",
+        "left": {
+            "meta": {"key": "iifgroup"},
+        },
+        "right": 30,
+    }
+}
 
 NFT_REJECT = {"reject": {"type": "icmp", "expr": "port-unreachable"}}
 NFT_ORION_PREFIX = {
@@ -47,3 +56,46 @@ def make_expr(op, left, right):
             "right": right,
         }
     }
+
+def ports_map(config):
+    expositions = []
+    
+    for exposition in config:
+        valid = 'protocol' in exposition \
+            and 'address' in exposition \
+            and 'redirectAddress' in exposition
+        if not valid:
+            continue
+        
+        shouldUsePorts = 'port' in exposition \
+            and 'redirectPort' in exposition \
+            and exposition['protocol'] in  ['tcp', 'udp']
+        
+        if shouldUsePorts:       
+            ports = [exposition["port"]] \
+                if type(exposition["port"]).__name__ != 'list' \
+                else exposition["port"]
+            
+            redirectPort = [exposition["redirectPort"]] \
+                if type(exposition["redirectPort"]).__name__ != 'list' \
+                else exposition["redirectPort"]
+            
+            if len(redirectPort) == len(ports):
+                for zpublicPort, zredirectPort in zip(ports, redirectPort):
+                    expositions.append({
+                        'protocol': exposition['protocol'],
+                        'port': zpublicPort,
+                        'redirectPort': zredirectPort,
+                        'address': exposition['address'],
+                        'redirectAddress': exposition['redirectAddress']
+                    })
+            else:
+                print("Ignoring port because redirectPort does not match port")
+        else:
+            expositions.append({
+                'protocol': exposition['protocol'],
+                'address': exposition['address'],
+                'redirectAddress': exposition['redirectAddress']
+            })
+
+    return expositions
