@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import nftables
 from utils import *
 import json
