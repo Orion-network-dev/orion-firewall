@@ -1,3 +1,2 @@
 #!/bin/sh
 
-/sbin/orion-firewall-update
