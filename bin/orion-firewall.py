@@ -196,7 +196,7 @@ def main():
         }),
         make_chain("forward", "orion", "inet", "filter", {
             "hook": "forward",
-            "prio": -101,
+            "prio": -1,
         }),
         make_chain("prerouting", "orion", "inet", "nat", {
             "hook": "prerouting",
