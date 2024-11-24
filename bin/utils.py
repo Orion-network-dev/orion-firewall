@@ -47,19 +47,3 @@ def make_expr(op, left, right):
             "right": right,
         }
     }
-
-
-def resolve_identity():
-    return "idk bruh"
-
-
-def read_config():
-    return [
-        {
-            "protocol": "icmp",  # protocol of the match
-            "port": 533,  # port dans le réseau orion
-            "address": "10.30.69.1",  # ip dans le réseau orion
-            "redirectPort": 53,  # port dans le backend
-            "redirectAddress": "1.1.1.1",  # adresse du backend
-        }
-    ]

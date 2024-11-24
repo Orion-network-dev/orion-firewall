@@ -4,18 +4,18 @@ sys.path.append('/usr/lib/orion-firewall')
 import nftables
 from utils import *
 import json
+import toml
 
 def main():
     nft = nftables.Nftables()
-    self_identity = resolve_identity()
-    exposed = read_config()
     
-    # chains ready to be exposed
-    #  orionForward => ready, all rules are in place
-    #  orionNatPostRouting => ready, generated all the rules
-    #  orionNatPreRouting => ready, generates all the rules
-
-    myself = "10.30.0.0"
+    with open('/etc/orion-firewall/config.toml', 'r') as f:
+        config = toml.load(f)
+    
+    id = config["memberID"]
+    exposed = config["expose"]
+    
+    myself = "10.30.%s.0" % id
 
     o1_create_tables = [
         # The orion inet table handles ipv4 traffic for orion
@@ -175,9 +175,9 @@ def main():
                         "field": "daddr",
                     },
                 }, NFT_ORION_PREFIX),
-                make_expr("!=", {
+                make_expr("==", {
                     "meta": {
-                        "key": "iifgroup",
+                        "key": "oifgroup",
                     },
                 }, "30"),
                 {
@@ -220,7 +220,7 @@ def main():
         make("add", "rule", {
             "family": "inet",
             "table": "orion",
-            "chain": "output",
+            "chain": "postrouting",
             "expr": [
                 { "goto": { "target": "orionNatPostRouting" } }
             ]
@@ -228,9 +228,9 @@ def main():
         make("add", "rule", {
             "family": "inet",
             "table": "orion",
-            "chain": "postrouting",
+            "chain": "output",
             "expr": [
-                { "goto": { "target": "orionNatPostRouting" } }
+                { "goto": { "target": "orionNatPreRouting" } }
             ]
         }),
     ]

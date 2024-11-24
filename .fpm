@@ -4,6 +4,7 @@
 --depends openssl
 --depends python3
 --depends python3-nftables
+--depends python3-toml
 --depends nftables
 --description "Various utilities and scripts related to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
@@ -13,3 +14,4 @@ bin/orion-firewall.py=/usr/lib/orion-firewall/update
 bin/utils.py=/usr/lib/orion-firewall/utils.py
 bin/update=/sbin/orion-firewall-update
 bin/orion-firewall.service=/etc/systemd/system/orion-firewall.service
+bin/config.toml=/etc/orion-firewall/config.toml
