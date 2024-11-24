@@ -1,254 +1,403 @@
 #!/usr/bin/env python3
 import sys
-sys.path.append('/usr/lib/orion-firewall')
+
+sys.path.append("/usr/lib/orion-firewall")
 import nftables
 from utils import *
 import json
 import toml
 
+
 def main():
     nft = nftables.Nftables()
-    
-    with open('/etc/orion-firewall/config.toml', 'r') as f:
+
+    with open("/etc/orion-firewall/config.toml", "r") as f:
         config = toml.load(f)
-    
+
     id = config["memberID"]
     exposed = ports_map(config["expose"])
-    
+
     myself = "10.30.%s.0" % id
 
     o1_create_tables = [
         # The orion inet table handles ipv4 traffic for orion
         # a new table, called "orion6" will be added for inet6 traffic.
-        make("add", "table", {
-            "family": "inet",
-            "name": "orion",
-        }),
-        make("flush", "table", {
-            "name": "orion",
-            "family": "inet",
-        }),
+        make(
+            "add",
+            "table",
+            {
+                "family": "inet",
+                "name": "orion",
+            },
+        ),
+        make(
+            "flush",
+            "table",
+            {
+                "name": "orion",
+                "family": "inet",
+            },
+        ),
     ]
-    
+
     # Create the orion chains for handling packets
     o2_create_orion_chains = [
         make_chain("orionForward", "orion", "inet", {}),
         make_chain("orionNatPostRouting", "orion", "inet", {}),
         make_chain("orionNatPreRouting", "orion", "inet", {}),
     ]
-    
+
     o3_forward_filter = [
         # We accept the traffic if the destination
         # is another orion interface (ex. We are routing to someone)
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "orionForward",
-            "expr": [
-                NFT_ORION_OINT_GROUP,
-                NFT_ACCEPT,
-            ],
-        }),
-        
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionForward",
+                "expr": [
+                    NFT_ORION_OINT_GROUP,
+                    NFT_ACCEPT,
+                ],
+            },
+        ),
         # We accept the already established and related traffic
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "orionForward",
-            "expr": [
-                make_expr("in", {
-                    "ct": {
-                        "key": "state",
-                    },
-                }, ["established", "related"]),
-                NFT_ACCEPT,
-            ]
-        }),
-        
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionForward",
+                "expr": [
+                    make_expr(
+                        "in",
+                        {
+                            "ct": {
+                                "key": "state",
+                            },
+                        },
+                        ["established", "related"],
+                    ),
+                    NFT_ACCEPT,
+                ],
+            },
+        ),
         # We accept the traffic that was dst-nat'ed
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "orionForward",
-            "expr": [
-                make_expr("in", {
-                    "ct": {
-                        "key": "status",
-                    }
-                },"dnat"),
-                NFT_ACCEPT,
-            ]
-        }),
-        
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionForward",
+                "expr": [
+                    make_expr(
+                        "in",
+                        {
+                            "ct": {
+                                "key": "status",
+                            }
+                        },
+                        "dnat",
+                    ),
+                    NFT_ACCEPT,
+                ],
+            },
+        ),
         # We reject the forwards by default
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "orionForward",
-            "expr": [
-                NFT_ORION_IINT_GROUP,
-                NFT_REJECT,
-            ]
-        })
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionForward",
+                "expr": [
+                    NFT_ORION_IINT_GROUP,
+                    NFT_REJECT,
+                ],
+            },
+        ),
     ]
 
     o4_exposed_rules = [
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "orionNatPreRouting",
-            "expr": [
-                # 1. Vérification de l'adresse de destination
-                make_expr("==", {
-                    "payload": {
-                      "protocol": "ip",
-                      "field": "daddr"
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionNatPreRouting",
+                "expr": [
+                    # 1. Vérification de l'adresse de destination
+                    make_expr(
+                        "==",
+                        {"payload": {"protocol": "ip", "field": "daddr"}},
+                        exp["address"],
+                    ),
+                    # 2. Vérification du protocole L4
+                    make_expr(
+                        "==",
+                        {
+                            "meta": {
+                                "key": "l4proto",
+                            },
+                        },
+                        exp["protocol"],
+                    ),
+                ]
+                + (
+                    [
+                        make_expr(
+                            "==",
+                            {
+                                "payload": {
+                                    "protocol": exp["protocol"],
+                                    "field": "dport",
+                                },
+                            },
+                            exp["port"],
+                        )
+                    ]
+                    if exp["protocol"] in ["tcp", "udp"]
+                    else []
+                )
+                + [
+                    {
+                        "dnat": dict(
+                            {
+                                "addr": exp["redirectAddress"],
+                                "family": "ip",
+                            },
+                            **(
+                                {"port": exp["redirectPort"]}
+                                if exp["protocol"] in ["tcp", "udp"]
+                                else {}
+                            ),
+                        )
                     }
-                }, exp["address"]),
-                # 2. Vérification du protocole L4
-                make_expr("==", {
-                    "meta": {
-                        "key": "l4proto",
-                    },
-                }, exp["protocol"]),
-            ] + ([make_expr("==", {
-                "payload": {
-                    "protocol": exp["protocol"],
-                    "field": "dport",
-                },
-            }, exp["port"])] if exp["protocol"] in ["tcp", "udp"] else []) + [
-                {
-                    "dnat": dict({
-                        "addr": exp["redirectAddress"],
-                        "family": "ip",
-                        
-                    }, **({ "port": exp["redirectPort"] } if exp["protocol"] in ["tcp", "udp"] else {}))
-                }
-            ]
-        }) for exp in exposed
+                ],
+            },
+        )
+        for exp in exposed
     ]
-    
+
     o5_sourcenat = [
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "orionNatPostRouting",
-            "expr": [
-                make_expr("==", {
-                    "payload": {
-                        "protocol": "ip",
-                        "field": "saddr",
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionNatPostRouting",
+                "expr": [
+                    make_expr(
+                        "==",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "saddr",
+                            },
+                        },
+                        exo["redirectAddress"],
+                    ),
+                    make_expr(
+                        "==",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "daddr",
+                            },
+                        },
+                        NFT_ORION_PREFIX,
+                    ),
+                    {
+                        "snat": {
+                            "addr": exo["address"],
+                        }
                     },
-                }, exo["redirectAddress"]),
-                make_expr("==", {
-                    "payload": {
-                        "protocol": "ip",
-                        "field": "daddr",
-                    },
-                }, NFT_ORION_PREFIX),
-                {
-                    "snat": {
-                        "addr": exo["address"],
-                    }
-                }
-            ]
-        }) for exo in exposed
+                ],
+            },
+        )
+        for exo in exposed
     ] + [
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "orionNatPostRouting",
-            "expr": [
-                make_expr("!=", {
-                    "payload": {
-                        "protocol": "ip",
-                        "field": "saddr",
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionNatPostRouting",
+                "expr": [
+                    make_expr(
+                        "!=",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "saddr",
+                            },
+                        },
+                        NFT_ORION_PREFIX,
+                    ),
+                    make_expr(
+                        "==",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "daddr",
+                            },
+                        },
+                        NFT_ORION_PREFIX,
+                    ),
+                    make_expr(
+                        "!=",
+                        {
+                            "meta": {
+                                "key": "iifgroup",
+                            },
+                        },
+                        "30",
+                    ),
+                    {
+                        "snat": {
+                            "addr": myself,
+                        }
                     },
-                }, NFT_ORION_PREFIX),
-                make_expr("==", {
-                    "payload": {
-                        "protocol": "ip",
-                        "field": "daddr",
-                    },
-                }, NFT_ORION_PREFIX),
-                make_expr("!=", {
-                    "meta": {
-                        "key": "iifgroup",
-                    },
-                }, "30"),
-                {
-                    "snat": {
-                        "addr": myself,
-                    }
-                }
-            ]
-        }),
+                ],
+            },
+        ),
     ]
-    
-    o6_hooks = [ # We add all chain that hook into the packets
-        make_chain("postrouting", "orion", "inet", "nat", {
-            "hook": "postrouting",
-            "prio": 99,
-        }),
-        make_chain("output", "orion", "inet", "nat", {
-            "hook": "output",
-            "prio": -199,
-        }),
-        make_chain("forward", "orion", "inet", "filter", {
-            "hook": "forward",
-            "prio": -1,
-        }),
-        make_chain("prerouting", "orion", "inet", "nat", {
-            "hook": "prerouting",
-            "prio": -101,
-        }),
+
+    o6_hooks = [  # We add all chain that hook into the packets
+        make_chain(
+            "postrouting",
+            "orion",
+            "inet",
+            "nat",
+            {
+                "hook": "postrouting",
+                "prio": 99,
+            },
+        ),
+        make_chain(
+            "output",
+            "orion",
+            "inet",
+            "nat",
+            {
+                "hook": "output",
+                "prio": -199,
+            },
+        ),
+        make_chain(
+            "forward",
+            "orion",
+            "inet",
+            "filter",
+            {
+                "hook": "forward",
+                "prio": -1,
+            },
+        ),
+        make_chain(
+            "prerouting",
+            "orion",
+            "inet",
+            "nat",
+            {
+                "hook": "prerouting",
+                "prio": -101,
+            },
+        ),
     ]
-    
+
     o7_hooks_jump = [
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "prerouting",
-            "expr": [
-                { "goto": { "target": "orionNatPreRouting"}  }
-            ]
-        }),
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "postrouting",
-            "expr": [
-                { "goto": { "target": "orionNatPostRouting" } }
-            ]
-        }),
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "output",
-            "expr": [
-                { "goto": { "target": "orionNatPreRouting" } }
-            ]
-        }),
-        make("add", "rule", {
-            "family": "inet",
-            "table": "orion",
-            "chain": "forward",
-            "expr": [
-                { "goto": { "target": "orionForward" } }
-            ]
-        })
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "prerouting",
+                "expr": [{"goto": {"target": "orionNatPreRouting"}}],
+            },
+        ),
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "postrouting",
+                "expr": [{"goto": {"target": "orionNatPostRouting"}}],
+            },
+        ),
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "forward",
+                "expr": [{"goto": {"target": "orionForward"}}],
+            },
+        ),
     ]
-    
-    ops = o1_create_tables \
-        + o2_create_orion_chains \
-        + o3_forward_filter \
-        + o4_exposed_rules \
-        + o5_sourcenat \
-        + o6_hooks \
+
+    o8_nat_rule_output = [
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "output",
+                "expr": [
+                    make_expr(
+                        "!=",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "saddr",
+                            },
+                        },
+                        NFT_ORION_PREFIX,
+                    ),
+                    make_expr(
+                        "==",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "daddr",
+                            },
+                        },
+                        NFT_ORION_PREFIX,
+                    ),
+                    {
+                        "snat": {
+                            "addr": myself,
+                        }
+                    },
+                ],
+            },
+        ),
+    ]
+
+    ops = (
+        o1_create_tables
+        + o2_create_orion_chains
+        + o3_forward_filter
+        + o4_exposed_rules
+        + o5_sourcenat
+        + o6_hooks
         + o7_hooks_jump
+        + o8_nat_rule_output
+    )
 
-
-    ruleFile = { "nftables": ops }
+    ruleFile = {"nftables": ops}
     print(json.dumps(ruleFile, indent=1))
     nft.json_validate(ruleFile)
     rc, output, error = nft.json_cmd(ruleFile)
@@ -259,7 +408,7 @@ def main():
     if len(output) != 0:
         # more error control?
         print(f"WARNING: output: {output}")
-    
+
 
 if __name__ == "__main__":
     main()
