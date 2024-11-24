@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+import sys
+sys.path.append('/usr/lib/orion-firewall')
 import nftables
 from utils import *
 import json

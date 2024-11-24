@@ -10,6 +10,6 @@
 --maintainer "Matthieu Pignolet <orion-release@mpgn.dev>"
 
 bin/orion-firewall.py=/usr/lib/orion-firewall/update
-bin/utils.py=/usr/lib/orion-firewall/utils
+bin/utils.py=/usr/lib/orion-firewall/utils.py
 bin/update=/sbin/orion-firewall-update
 bin/orion-firewall.service=/etc/systemd/system/orion-firewall.service
