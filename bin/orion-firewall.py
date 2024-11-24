@@ -222,7 +222,15 @@ def main():
             "table": "orion",
             "chain": "output",
             "expr": [
-                { "goto": { "target": "orionNatPreRouting" } }
+                { "goto": { "target": "orionNatPostRouting" } }
+            ]
+        }),
+        make("add", "rule", {
+            "family": "inet",
+            "table": "orion",
+            "chain": "postrouting",
+            "expr": [
+                { "goto": { "target": "orionNatPostRouting" } }
             ]
         }),
     ]
