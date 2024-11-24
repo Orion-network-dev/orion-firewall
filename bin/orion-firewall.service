@@ -1,0 +1,9 @@
+[Unit]
+Description=Add orion-firewall iptables rules
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/orion-firewall-update
+
+[Install]
+WantedBy=multi-user.target

@@ -1,15 +1,16 @@
 -s dir
 --name orion-firewall
 --architecture all
---depends bash
 --depends openssl
+--depends python3
+--depends python3-nftables
 --depends nftables
---description "Various utilities and scripts relate to Orion's routing"
+--description "Various utilities and scripts related to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
 --maintainer "Matthieu Pignolet <orion-release@mpgn.dev>"
 --after-install postinstall
 
-bin/user-utils=/usr/lib/orion-firewall/user-utils
-bin/member-id=/usr/lib/orion-firewall/member-id
-iptables-user=/etc/orion-firewall/configuration
-nftables.d/nftables.conf=/etc/orion-firewall/nftables.conf.tmpl
+bin/orion-firewall.py=/usr/lib/orion-firewall/update
+bin/utils.py=/usr/lib/orion-firewall/utils
+bin/update=/sbin/orion-firewall-update
+bin/orion-firewall.service=/etc/systemd/system/orion-firewall.service
