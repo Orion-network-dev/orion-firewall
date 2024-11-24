@@ -8,7 +8,6 @@
 --description "Various utilities and scripts related to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
 --maintainer "Matthieu Pignolet <orion-release@mpgn.dev>"
---after-install postinstall
 
 bin/orion-firewall.py=/usr/lib/orion-firewall/update
 bin/utils.py=/usr/lib/orion-firewall/utils
