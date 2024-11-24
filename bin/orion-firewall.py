@@ -188,19 +188,19 @@ def main():
     o6_hooks = [ # We add all chain that hook into the packets
         make_chain("postrouting", "orion", "inet", "nat", {
             "hook": "postrouting",
-            "prio": -1,
+            "prio": 99,
         }),
         make_chain("output", "orion", "inet", "nat", {
             "hook": "output",
-            "prio": -1,
+            "prio": -201,
         }),
         make_chain("forward", "orion", "inet", "filter", {
             "hook": "forward",
-            "prio": -1,
+            "prio": -101,
         }),
         make_chain("prerouting", "orion", "inet", "nat", {
             "hook": "prerouting",
-            "prio": -1,
+            "prio": -101,
         }),
     ]
     
