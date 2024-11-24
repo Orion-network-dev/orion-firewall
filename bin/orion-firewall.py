@@ -192,7 +192,7 @@ def main():
         }),
         make_chain("output", "orion", "inet", "nat", {
             "hook": "output",
-            "prio": -201,
+            "prio": -199,
         }),
         make_chain("forward", "orion", "inet", "filter", {
             "hook": "forward",
