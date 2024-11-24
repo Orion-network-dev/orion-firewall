@@ -3,7 +3,7 @@ Description=Add orion-firewall iptables rules
 
 [Service]
 Type=oneshot
-ExecStart=/bin/orion-fw-update
+ExecStart=/sbin/orion-firewall-update
 
 [Install]
 WantedBy=multi-user.target
