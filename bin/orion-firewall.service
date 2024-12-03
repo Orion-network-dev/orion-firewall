@@ -1,5 +1,5 @@
 [Unit]
-Description=Add orion-firewall iptables rules
+Description=Service that calls the orion-firewall utility at boot
 
 [Service]
 Type=oneshot
