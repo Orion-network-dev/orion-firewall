@@ -210,9 +210,50 @@ def main():
     
     snatSet = {}
     for exo in exposed:
-        snatSet[(exo["address"], exo["redirectAddress"])] = exo
+        snatSet[(exo["address"], exo["redirectAddress"])] = {
+            "address": exo["address"],
+            "redirectAddress": exo["redirectAddress"],
+        }
     sorted = snatSet.values()
     o5_sourcenat = [
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionNatPostRouting",
+                "expr": [
+                    make_expr(
+                        "!=",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "saddr",
+                            },
+                        },
+                        NFT_ORION_PREFIX,
+                    ),
+                    make_expr(
+                        "==",
+                        {
+                            "payload": {
+                                "protocol": "ip",
+                                "field": "daddr",
+                            },
+                        },
+                        exo["redirectAddress"],
+                    ),
+                    {
+                        "snat": {
+                            "addr": myself,
+                        }
+                    },
+                ],
+            },
+        )
+        for exo in sorted
+    ] + [
         make(
             "add",
             "rule",
