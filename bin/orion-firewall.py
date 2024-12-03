@@ -133,7 +133,22 @@ def main():
                 exp["address"],
             ),
         ] + []
-        # we use ports
+        
+        # if the protocol is not "any" we match the protocol
+        if exp["protocol"] not in ["any"]:
+            expr.append(
+                make_expr(
+                    "==",
+                    {
+                        "meta": {
+                            "key": "l4proto",
+                        },
+                    },
+                    exp["protocol"],
+                )
+            )
+        
+        # if the protocol is "udp" or "tcp" we use ports
         if exp["protocol"] in ["tcp", "udp"]:
             expr.append(
                 make_expr(
@@ -158,6 +173,8 @@ def main():
                     exp["port"],
                 )
             )
+            
+            # for udp or tcp we use a custom dnat rule to redirect ports
             expr.append(
                 {
                     "dnat": {
@@ -168,19 +185,7 @@ def main():
                 }
             )
         else:
-            if exp["protocol"] not in ["any"]:
-                expr.append(
-                    make_expr(
-                        "==",
-                        {
-                            "meta": {
-                                "key": "l4proto",
-                            },
-                        },
-                        exp["protocol"],
-                    )
-                )
-            
+            # else, we simply redirect the traffic
             expr.append(
                 {
                     "dnat": {
