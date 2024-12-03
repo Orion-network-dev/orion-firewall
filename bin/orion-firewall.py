@@ -210,7 +210,7 @@ def main():
     
     snatSet = {}
     for exo in exposed:
-        snatSet[(exo["address"] + exo["redrectAddress"])] = exo
+        snatSet[(exo["address"], exo["redrectAddress"])] = exo
     sorted = snatSet.values()
     o5_sourcenat = [
         make(
