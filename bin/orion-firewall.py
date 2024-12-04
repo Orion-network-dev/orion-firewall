@@ -133,7 +133,7 @@ def main():
                 exp["address"],
             ),
         ] + []
-        
+
         # if the protocol is not "any" we match the protocol
         if exp["protocol"] not in ["any"]:
             expr.append(
@@ -147,7 +147,7 @@ def main():
                     exp["protocol"],
                 )
             )
-        
+
         # if the protocol is "udp" or "tcp" we use ports
         if exp["protocol"] in ["tcp", "udp"]:
             expr.append(
@@ -173,7 +173,7 @@ def main():
                     exp["port"],
                 )
             )
-            
+
             # for udp or tcp we use a custom dnat rule to redirect ports
             expr.append(
                 {
@@ -207,7 +207,7 @@ def main():
         )
 
         o4_exposed_rules.append(rule)
-    
+
     snatSet = {}
     for exo in exposed:
         snatSet[(exo["address"], exo["redirectAddress"])] = {
@@ -216,122 +216,134 @@ def main():
             "masquerade": exo["masquerade"],
         }
     sorted = snatSet.values()
-    o5_sourcenat = [
-        make(
-            "add",
-            "rule",
-            {
-                "family": "inet",
-                "table": "orion",
-                "chain": "orionNatPostRouting",
-                "expr": [
-                    make_expr(
-                        "!=",
-                        {
-                            "payload": {
-                                "protocol": "ip",
-                                "field": "saddr",
-                            },
-                        },
-                        NFT_ORION_PREFIX,
+    o5_sourcenat = (
+        [
+            make(
+                "add",
+                "rule",
+                {
+                    "family": "inet",
+                    "table": "orion",
+                    "chain": "orionNatPostRouting",
+                    "expr": (
+                        (
+                            make_expr(
+                                "!=",
+                                {
+                                    "payload": {
+                                        "protocol": "ip",
+                                        "field": "saddr",
+                                    },
+                                },
+                                NFT_ORION_PREFIX,
+                            )
+                            if exo["masquerade"] == False
+                            else []
+                        )
+                        + [
+                            make_expr(
+                                "==",
+                                {
+                                    "payload": {
+                                        "protocol": "ip",
+                                        "field": "daddr",
+                                    },
+                                },
+                                exo["redirectAddress"],
+                            ),
+                            (
+                                {"masquerade": {}}
+                                if exo["masquerade"] == True
+                                else {
+                                    "snat": {
+                                        "addr": myself,
+                                    }
+                                }
+                            ),
+                        ]
                     ),
-                    make_expr(
-                        "==",
-                        {
-                            "payload": {
-                                "protocol": "ip",
-                                "field": "daddr",
+                },
+            )
+            for exo in sorted
+        ]
+        + [
+            make(
+                "add",
+                "rule",
+                {
+                    "family": "inet",
+                    "table": "orion",
+                    "chain": "orionNatPostRouting",
+                    "expr": [
+                        make_expr(
+                            "==",
+                            {
+                                "payload": {
+                                    "protocol": "ip",
+                                    "field": "saddr",
+                                },
                             },
-                        },
-                        exo["redirectAddress"],
-                    ),
-                    {
-                        "masquerade": {}
-                    } if exo["masquerade"] == True else {
-                        "snat": {
-                            "addr": myself,
-                        }
-                    },
-                ],
-            },
-        )
-        for exo in sorted
-    ] + [
-        make(
-            "add",
-            "rule",
-            {
-                "family": "inet",
-                "table": "orion",
-                "chain": "orionNatPostRouting",
-                "expr": [
-                    make_expr(
-                        "==",
-                        {
-                            "payload": {
-                                "protocol": "ip",
-                                "field": "saddr",
+                            exo["redirectAddress"],
+                        ),
+                        make_expr(
+                            "==",
+                            {
+                                "payload": {
+                                    "protocol": "ip",
+                                    "field": "daddr",
+                                },
                             },
-                        },
-                        exo["redirectAddress"],
-                    ),
-                    make_expr(
-                        "==",
+                            NFT_ORION_PREFIX,
+                        ),
                         {
-                            "payload": {
-                                "protocol": "ip",
-                                "field": "daddr",
-                            },
+                            "snat": {
+                                "addr": exo["address"],
+                            }
                         },
-                        NFT_ORION_PREFIX,
-                    ),
-                    {
-                        "snat": {
-                            "addr": exo["address"],
-                        }
-                    },
-                ],
-            },
-        )
-        for exo in sorted
-    ] + [
-        make(
-            "add",
-            "rule",
-            {
-                "family": "inet",
-                "table": "orion",
-                "chain": "orionNatPostRouting",
-                "expr": [
-                    make_expr(
-                        "!=",
+                    ],
+                },
+            )
+            for exo in sorted
+        ]
+        + [
+            make(
+                "add",
+                "rule",
+                {
+                    "family": "inet",
+                    "table": "orion",
+                    "chain": "orionNatPostRouting",
+                    "expr": [
+                        make_expr(
+                            "!=",
+                            {
+                                "payload": {
+                                    "protocol": "ip",
+                                    "field": "saddr",
+                                },
+                            },
+                            NFT_ORION_PREFIX,
+                        ),
+                        make_expr(
+                            "==",
+                            {
+                                "payload": {
+                                    "protocol": "ip",
+                                    "field": "daddr",
+                                },
+                            },
+                            NFT_ORION_PREFIX,
+                        ),
                         {
-                            "payload": {
-                                "protocol": "ip",
-                                "field": "saddr",
-                            },
+                            "snat": {
+                                "addr": myself,
+                            }
                         },
-                        NFT_ORION_PREFIX,
-                    ),
-                    make_expr(
-                        "==",
-                        {
-                            "payload": {
-                                "protocol": "ip",
-                                "field": "daddr",
-                            },
-                        },
-                        NFT_ORION_PREFIX,
-                    ),
-                    {
-                        "snat": {
-                            "addr": myself,
-                        }
-                    },
-                ],
-            },
-        ),
-    ]
+                    ],
+                },
+            ),
+        ]
+    )
 
     o6_hooks = [  # We add all chain that hook into the packets
         make_chain(
