@@ -245,6 +245,8 @@ def main():
                         exo["redirectAddress"],
                     ),
                     {
+                        "masquerade": {}
+                    } if exo["masquerade"] == True else {
                         "snat": {
                             "addr": myself,
                         }
