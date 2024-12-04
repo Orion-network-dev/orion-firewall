@@ -213,6 +213,7 @@ def main():
         snatSet[(exo["address"], exo["redirectAddress"])] = {
             "address": exo["address"],
             "redirectAddress": exo["redirectAddress"],
+            "masquerade": exo["masquerade"],
         }
     sorted = snatSet.values()
     o5_sourcenat = [
