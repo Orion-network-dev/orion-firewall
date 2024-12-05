@@ -519,6 +519,39 @@ def main():
                 ],
             },
         ),
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionInput",
+                "expr": [
+                    make_expr(
+                        "==",
+                        {
+                            "meta": {
+                                "key": "l4proto",
+                            },
+                        },
+                        "icmp",
+                    ),
+                    NFT_ACCEPT,
+                ],
+            },
+        ),
+                make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionInput",
+                "expr": [
+                    NFT_REJECT,
+                ],
+            },
+        ),
     ]
 
     ops = (
