@@ -227,20 +227,22 @@ def main():
                     "table": "orion",
                     "chain": "orionNatPostRouting",
                     "expr": (
-                        (
-                            make_expr(
-                                "!=",
-                                {
-                                    "payload": {
-                                        "protocol": "ip",
-                                        "field": "saddr",
+                        [
+                            (
+                                make_expr(
+                                    "!=",
+                                    {
+                                        "payload": {
+                                            "protocol": "ip",
+                                            "field": "saddr",
+                                        },
                                     },
-                                },
-                                NFT_ORION_PREFIX,
+                                    NFT_ORION_PREFIX,
+                                )
+                                if exo["masquerade"] == False
+                                else []
                             )
-                            if exo["masquerade"] == False
-                            else []
-                        )
+                        ]
                         + [
                             make_expr(
                                 "==",
@@ -540,7 +542,7 @@ def main():
                 ],
             },
         ),
-                make(
+        make(
             "add",
             "rule",
             {
