@@ -44,6 +44,7 @@ def main():
         make_chain("orionForward", "orion", "inet", {}),
         make_chain("orionNatPostRouting", "orion", "inet", {}),
         make_chain("orionNatPreRouting", "orion", "inet", {}),
+        make_chain("orionInput", "orion", "inet", {}),
     ]
 
     o3_forward_filter = [
@@ -386,6 +387,16 @@ def main():
                 "prio": -101,
             },
         ),
+        make_chain(
+            "input",
+            "orion",
+            "inet",
+            "filter",
+            {
+                "hook": "input",
+                "prio": -1,
+            },
+        ),
     ]
 
     o7_hooks_jump = [
@@ -429,6 +440,85 @@ def main():
                 "expr": [{"goto": {"target": "orionForward"}}],
             },
         ),
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "input",
+                "expr": [NFT_ORION_IINT_GROUP, {"goto": {"target": "orionInput"}}],
+            },
+        ),
+    ]
+
+    o8_input_filters = [
+        # accept related traffic
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionInput",
+                "expr": [
+                    make_expr(
+                        "in",
+                        {
+                            "ct": {
+                                "key": "state",
+                            },
+                        },
+                        ["established", "related"],
+                    ),
+                    NFT_ACCEPT,
+                ],
+            },
+        ),
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionInput",
+                "expr": [
+                    make_expr(
+                        "==",
+                        {
+                            "payload": {
+                                "protocol": "tcp",
+                                "field": "dport",
+                            },
+                        },
+                        179,
+                    ),
+                    NFT_ACCEPT,
+                ],
+            },
+        ),
+        make(
+            "add",
+            "rule",
+            {
+                "family": "inet",
+                "table": "orion",
+                "chain": "orionInput",
+                "expr": [
+                    make_expr(
+                        "==",
+                        {
+                            "payload": {
+                                "protocol": "udp",
+                                "field": "dport",
+                            },
+                        },
+                        3784,
+                    ),
+                    NFT_ACCEPT,
+                ],
+            },
+        ),
     ]
 
     ops = (
@@ -439,6 +529,7 @@ def main():
         + o5_sourcenat
         + o6_hooks
         + o7_hooks_jump
+        + o8_input_filters
     )
 
     ruleFile = {"nftables": ops}
