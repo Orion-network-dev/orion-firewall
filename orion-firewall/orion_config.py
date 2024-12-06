@@ -2,6 +2,7 @@ from marshmallow import *
 from typing import List, Mapping, Any
 from marshmallow.exceptions import ValidationError
 from marshmallow.validate import OneOf, Range
+from marshmallow.utils import ensure_text_type
 import ipaddress
 
 class UnionField(fields.Field):
@@ -57,7 +58,7 @@ class IPv4Str(fields.IP):
             return None
         try:
             return ipaddress.IPv4Address(
-                fields.ensure_text_type(value)
+                ensure_text_type(value)
             ).__str__()
         except (ValueError, TypeError) as error:
             raise self.make_error("invalid_ip") from error
