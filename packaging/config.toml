@@ -1,0 +1,31 @@
+# Si le numéro de membre n'est pas correctement
+# récupéré par le programme de pare-feu, ce dernier
+# peut être modifié a partir de la proriété ci-dessous
+# overrideMemberId = 1
+
+# Un exposition vers orion est relativement simple
+ 
+# [[expose]]
+# La valeur "protocol" correspond au protocole qui va être redirigé
+# Les valeurs possibles sont tcp / udp / icmp / any ou autres protocoles 
+# supportés par nftables.
+# protocol = "<protocole>"
+# Si le protocole est tcp ou udp, un port est démandé
+# cette propriété peut être soit un nombre, soir un tableau de nombres.
+# port = 123
+# OU
+# port = [123, 456, 789]
+# La propritété "address" est l'adresse de votre LAN orion qui a être
+# redirigée, ce sera, effectivement l'adresse de votre service sur orion
+# address = "10.30.1.255"
+# redirectAddress correctement a l'adresse réelle de la machine ciblée.
+# redirectAddress = "10.60.13.2"
+# Correspond au port cible ou le flux sera redirigé.
+# redirectPort = 53
+# OU
+# port = [123, 456, 987] # Dans le cas ou un tableau est utilisé, sa taille doit être la meme
+# que la propritété "port".
+# Si la mise en place de route statique n'est pas possible, le routeur orion
+# utilisera a "masquerade" (utilisera son adresse ip dans votre lan) pour se connecter
+# au serveur a l'adresse "redirectAddress".
+# masquerade = false

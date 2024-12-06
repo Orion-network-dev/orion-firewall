@@ -1,17 +1,16 @@
 -s dir
 --name orion-firewall
 --architecture all
---depends openssl
 --depends python3
 --depends python3-nftables
 --depends python3-toml
+--depends python3-marshmallow
 --depends nftables
 --description "Various utilities and scripts related to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
 --maintainer "Matthieu Pignolet <orion-release@mpgn.dev>"
 
-bin/orion-firewall.py=/usr/lib/orion-firewall/update
-bin/utils.py=/usr/lib/orion-firewall/utils.py
-bin/update=/sbin/orion-firewall-update
-bin/orion-firewall.service=/etc/systemd/system/orion-firewall.service
-bin/config.toml=/etc/orion-firewall/config.toml
+orion-firewall/=/usr/lib/orion-firewall/
+packaging/update=/sbin/orion-firewall-update
+packaging/orion-firewall.service=/etc/systemd/system/orion-firewall.service
+packaging/config.toml=/etc/orion-firewall/config.toml
