@@ -2,6 +2,7 @@ from marshmallow import *
 from typing import List, Mapping, Any
 from marshmallow.exceptions import ValidationError
 from marshmallow.validate import OneOf, Range
+import ipaddress
 
 class UnionField(fields.Field):
     """Field that deserializes multi-type input data to app-level objects."""
@@ -45,6 +46,21 @@ class UnionField(fields.Field):
                 errors.append(error.messages)
         raise ValidationError(errors)
 
+class IPv4Str(fields.IP):
+    default_error_messages = {"invalid_ip": "Not a valid IPv4 address."}
+    DESERIALIZATION_CLASS = ipaddress.IPv4Address
+
+    def _deserialize(
+        self, value, attr, data, **kwargs
+    ) -> str | None:
+        if value is None:
+            return None
+        try:
+            return ipaddress.IPv4Address(
+                fields.ensure_text_type(value)
+            ).__str__()
+        except (ValueError, TypeError) as error:
+            raise self.make_error("invalid_ip") from error
 
 class ExposeConfig(Schema):
     validate = []
@@ -68,10 +84,10 @@ class ExposeConfig(Schema):
             fields.List(fields.Integer(validate=Range(0, 65535))),
         ],
     )
-    address = fields.IPv4(
+    address = IPv4Str(
         required=True,
     )
-    redirectAddress = fields.IPv4(
+    redirectAddress = IPv4Str(
         required=True,
     )
     redirectPort = UnionField(
