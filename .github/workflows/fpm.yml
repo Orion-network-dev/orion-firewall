@@ -21,6 +21,7 @@ jobs:
         repository: Orion-network-dev/apt-registry
         path: output-apt-repo/
     - run: mkdir -p output-apt-repo/orion-firewall/
+    - run: rm output-apt-repo/orion-firewall/*.deb
     - run: cp orion*.deb output-apt-repo/orion-firewall/
     - run: rm -rf output-apt-repo/.git
     - name: Pushes to the apt repository
