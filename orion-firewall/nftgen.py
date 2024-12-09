@@ -53,7 +53,7 @@ def flatten(config):
 def nft(config):
     id = identity.resolve_user_id(config)
     myself = "10.30.%s.0" % id
-
+    
     flattened = flatten(config["expose"])
 
     operations = [

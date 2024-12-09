@@ -21,6 +21,17 @@ class TestStringMethods(unittest.TestCase):
         
         configSchema = FirewallConfig()
         configSchema.load(CONFIG)
+    
+    def test_deserialize_config_expose_must_exist(self):
+        CONFIG = {
+            "overrideMemberId": None,
+        }
+        
+        configSchema = FirewallConfig()
+        config = configSchema.load(CONFIG)
+        
+        assert config["expose"] == [], "expose must always be array"
+        
     def test_deserialize_config_multiple_port(self):
         CONFIG = {
             "overrideMemberId": None,

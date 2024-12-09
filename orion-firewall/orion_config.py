@@ -147,4 +147,4 @@ class ExposeConfig(Schema):
 
 class FirewallConfig(Schema):
     overrideMemberId = fields.Integer(allow_none=True)
-    expose = fields.List(fields.Nested(ExposeConfig))
+    expose = fields.List(fields.Nested(ExposeConfig), load_default = [])
