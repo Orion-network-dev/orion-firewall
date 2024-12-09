@@ -13,6 +13,7 @@ class TestStringMethods(unittest.TestCase):
                     "port": 123,
                     "address": "10.30.1.1",
                     "redirectPort": 123,
+                    "redirectAddress": "10.50.40.50",
                     "masquerade": True,
                 }
             ],
@@ -29,6 +30,7 @@ class TestStringMethods(unittest.TestCase):
                     "port": [123, 456],
                     "address": "10.30.1.1",
                     "redirectPort": [123, 456],
+                    "redirectAddress": "9.99.99.99",
                     "masquerade": True,
                 }
             ],
