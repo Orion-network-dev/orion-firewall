@@ -2,6 +2,7 @@ import utils
 import constants
 import identity
 
+
 def flatten(config):
     expositions = []
 
@@ -305,8 +306,10 @@ def nft(config):
                             ),
                             utils.make_nft_match(
                                 "!=",
-                                constants.NFT_ORION_INPUT_INTERFACE_GROUP,
-                                30,  
+                                {
+                                    "meta": {"key": "iifgroup"},
+                                },
+                                30,
                             ),
                             utils.make_nft_match(
                                 "==",
