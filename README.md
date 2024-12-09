@@ -1,3 +1,3 @@
 # Orion Firewall 
 
-Do routing n stuff
+> warning: this does not do firewall for your node.
