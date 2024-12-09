@@ -11,7 +11,7 @@ def resolve_user_id(config):
         return config["overrideMemberId"]
 
     fs = open("/etc/default/oriond", "r")
-    file = str(fs.read())
+    file = fs.read()
     matches = re.findall(member_id_argument, file)
     if len(matches) > 1:
         raise Exception("multiple number id overrides found")

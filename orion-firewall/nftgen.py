@@ -280,7 +280,7 @@ def nft(config):
                         "expr": [
                             utils.make_nft_match(
                                 "==",
-                                constants.NFT_SOURCE_ADDRESS,
+                                constants.NFT_DESTINATION_ADDRESS,
                                 sourcenat["redirectAddress"],
                             ),
                             {"masquerade": {}},
@@ -302,6 +302,11 @@ def nft(config):
                                 "!=",
                                 constants.NFT_SOURCE_ADDRESS,
                                 constants.NFT_ORION_PREFIX,
+                            ),
+                            utils.make_nft_match(
+                                "!=",
+                                constants.NFT_ORION_INPUT_INTERFACE_GROUP,
+                                30,  
                             ),
                             utils.make_nft_match(
                                 "==",

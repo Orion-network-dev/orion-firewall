@@ -57,14 +57,13 @@ class IPv4Str(fields.IP):
         if value is None:
             return None
         try:
-            return ipaddress.IPv4Address(
+            return str(ipaddress.IPv4Address(
                 ensure_text_type(value)
-            ).__str__()
+            ))
         except (ValueError, TypeError) as error:
             raise self.make_error("invalid_ip") from error
 
 class ExposeConfig(Schema):
-    validate = []
     """Generic configuration related to an exposed port or host"""
 
     """
