@@ -5,6 +5,7 @@
 --depends python3-nftables
 --depends python3-toml
 --depends python3-marshmallow
+--depends python3-cryptography
 --depends nftables
 --description "Various utilities and scripts related to Orion's routing"
 --url "https://github.com/Orion-network-dev/orion-firewall"
