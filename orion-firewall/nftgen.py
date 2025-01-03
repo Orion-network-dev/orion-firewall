@@ -1,6 +1,13 @@
 import utils
 import constants
 import identity
+import socket
+
+local_ips = socket.gethostbyname_ex(socket.gethostname())[2] + ["0.0.0.0"]
+
+
+def is_self_ip(ip):
+    return ip in local_ips
 
 
 def flatten(config):
@@ -197,7 +204,16 @@ def nft(config):
                     expose["port"],
                 )
             ]
-            if expose["redirectAddress"] not in ["127.0.0.1", "0.0.0.0"]:
+            if is_self_ip(expose["redirectAddress"]):
+                expr.append(
+                    {
+                        "redirect": {
+                            "port": expose["redirectPort"],
+                            "family": "ip",
+                        }
+                    }
+                )
+            else:
                 expr.append(
                     # for udp or tcp we use a custom dnat rule to redirect ports
                     {
@@ -208,22 +224,12 @@ def nft(config):
                         },
                     }
                 )
-            else:
+
+        else:
+            if is_self_ip(expose["redirectAddress"]):
                 expr.append(
                     {
                         "redirect": {
-                            "port": expose["redirectPort"],
-                            "family": "ip",
-                        }
-                    }
-                )
-
-        else:
-            if expose["redirectAddress"] not in ["127.0.0.1", "0.0.0.0"]:
-                expr.append(
-                    {
-                        "dnat": {
-                            "addr": expose["redirectAddress"],
                             "family": "ip",
                         },
                     }
@@ -231,7 +237,8 @@ def nft(config):
             else:
                 expr.append(
                     {
-                        "redirect": {
+                        "dnat": {
+                            "addr": expose["redirectAddress"],
                             "family": "ip",
                         },
                     }
@@ -252,11 +259,12 @@ def nft(config):
 
     snats = {}
     for expose in flattened:
-        snats[(expose["address"], expose["redirectAddress"])] = {
-            "address": expose["address"],
-            "redirectAddress": expose["redirectAddress"],
-            "masquerade": expose["masquerade"],
-        }
+        if not is_self_ip(expose["redirectAddress"]):
+            snats[(expose["address"], expose["redirectAddress"])] = {
+                "address": expose["address"],
+                "redirectAddress": expose["redirectAddress"],
+                "masquerade": expose["masquerade"],
+            }
 
     sorted = snats.values()
     for sourcenat in sorted:
