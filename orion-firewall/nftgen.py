@@ -198,7 +198,7 @@ def nft(config):
                 )
             ]
             if expose["redirectAddress"] not in ["127.0.0.1", "0.0.0.0"]:
-                expr += [
+                expr.append(
                     # for udp or tcp we use a custom dnat rule to redirect ports
                     {
                         "dnat": {
@@ -206,17 +206,17 @@ def nft(config):
                             "family": "ip",
                             "port": expose["redirectPort"],
                         },
-                    },
-                ]
+                    }
+                )
             else:
-                expr += [
+                expr.append(
                     {
                         "redirect": {
                             "port": expose["redirectPort"],
                             "family": "ip",
                         }
                     }
-                ]
+                )
 
         else:
             if expose["redirectAddress"] not in ["127.0.0.1", "0.0.0.0"]:
