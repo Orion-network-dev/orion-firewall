@@ -53,7 +53,7 @@ def flatten(config):
 def nft(config):
     id = identity.resolve_user_id(config)
     myself = "10.30.%s.0" % id
-    
+
     flattened = flatten(config["expose"])
 
     operations = [
@@ -195,26 +195,47 @@ def nft(config):
                         },
                     },
                     expose["port"],
-                ),
-                # for udp or tcp we use a custom dnat rule to redirect ports
-                {
-                    "dnat": {
-                        "addr": expose["redirectAddress"],
-                        "family": "ip",
-                        "port": expose["redirectPort"],
-                    },
-                },
+                )
             ]
-        else:
-            # else, we simply redirect the traffic
-            expr.append(
-                {
-                    "dnat": {
-                        "addr": expose["redirectAddress"],
-                        "family": "ip",
+            if expose["redirectAddress"] not in ["127.0.0.1", "0.0.0.0"]:
+                expr += [
+                    # for udp or tcp we use a custom dnat rule to redirect ports
+                    {
+                        "dnat": {
+                            "addr": expose["redirectAddress"],
+                            "family": "ip",
+                            "port": expose["redirectPort"],
+                        },
                     },
-                }
-            )
+                ]
+            else:
+                expr += [
+                    {
+                        "redirect": {
+                            "port": expose["redirectPort"],
+                            "family": "ip",
+                        }
+                    }
+                ]
+
+        else:
+            if expose["redirectAddress"] not in ["127.0.0.1", "0.0.0.0"]:
+                expr.append(
+                    {
+                        "dnat": {
+                            "addr": expose["redirectAddress"],
+                            "family": "ip",
+                        },
+                    }
+                )
+            else:
+                expr.append(
+                    {
+                        "redirect": {
+                            "family": "ip",
+                        },
+                    }
+                )
 
         rule = utils.make_nft_expression(
             "add",
