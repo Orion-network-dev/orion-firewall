@@ -3,7 +3,11 @@ import constants
 import identity
 import socket
 
-local_ips = socket.gethostbyname_ex(socket.gethostname())[2] + ["0.0.0.0"]
+local_ips = (
+    socket.gethostbyname_ex(socket.gethostname())[2]
+    + socket.gethostbyname_ex("localhost")[2]
+    + ["0.0.0.0"]
+)
 
 
 def is_self_ip(ip):
