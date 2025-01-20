@@ -1,10 +1,9 @@
 import re
 import cryptography.x509 as x509
 
-member_id_argument = re.compile("-override-member-id[\s=]([0-9]+)")
-tls_path_argument = re.compile("-tls-path[\s=]([a-zA-Z\/]+)")
-cn_re = re.compile("([0-9]+):oriond")
-
+member_id_argument = re.compile(r"-override-member-id[\s=]([0-9]+)")
+tls_path_argument = re.compile(r"-tls-path[\s=]([a-zA-Z\/]+)")
+cn_re = re.compile(r"([0-9]+):oriond")
 
 def resolve_user_id(config):
     if "overrideMemberId" in config:

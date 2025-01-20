@@ -9,10 +9,8 @@ local_ips = (
     + ["0.0.0.0"]
 )
 
-
 def is_self_ip(ip):
     return ip in local_ips
-
 
 def flatten(config):
     expositions = []
